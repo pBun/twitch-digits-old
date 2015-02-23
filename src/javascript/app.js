@@ -1,8 +1,11 @@
 var angular = require('angular');
 var ngRoute = require('angular-route');
+var ngAnimate = require('angular-animate');
+var ngAria = require('angular-aria');
+var ngMaterial = require('angular-material/bower-material');
 var TestModule = require('./components/test/test');
 
-var app = angular.module('testApp', ['ngRoute', TestModule.name]);
+var app = angular.module('testApp', ['ngRoute', 'ngAria', 'ngAnimate', 'ngMaterial', TestModule.name]);
 
 // routes
 app.config(['$routeProvider',
