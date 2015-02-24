@@ -1,20 +1,5 @@
 <div class="container">
     <h1>Top Games</h1>
-    <ul>
-        <li data-ng-repeat="game in games">
-            <h2 data-ng-bind="game.game.name"></h2>
-            <div class="field">
-                <label for="">Viewers: </label>
-                <span data-ng-bind="game.viewers"></span>
-                (<span data-ng-bind="game.viewers / streams.viewers | percent"></span>)
-            </div>
-            <div class="field">
-                <label for="">Channels: </label>
-                <span data-ng-bind="game.channels"></span>
-                (<span data-ng-bind="game.channels / streams.channels | percent"></span>)
-            </div>
-            <img data-ng-src="{{game.game.box.large}}" alt="game.game.name">
-        </li>
-    </ul>
+    <div class="games" data-games></div>
 </div>
 

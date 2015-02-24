@@ -1,0 +1,100 @@
+var angular = require('angular');
+
+var service = function($q, Twitch) {
+
+  this._twitch = Twitch;
+  this._q = $q;
+
+  this.streams;
+  this.games;
+
+};
+service.$inject = ['$q', 'Twitch'];
+
+service.prototype.getStreamSummary = function() {
+  var deferred = this._q.defer();
+  this._twitch.get('streams/summary').then(function(data) {
+    this.streams = {};
+    this.streams.viewers = data.viewers;
+    this.streams.channels = data.channels;
+    deferred.resolve(this.streams);
+  }.bind(this));
+  return deferred.promise;
+};
+
+service.prototype.getGameStreams = function(gameName) {
+  var deferred = this._q.defer();
+  var encodedGameName = encodeURIComponent(gameName);
+  this._twitch.get('streams?game=' + encodedGameName).then(function(data) {
+    deferred.resolve(data.streams);
+  });
+  return deferred.promise;
+};
+
+service.prototype.formatGame = function(game) {
+  var deferred = this._q.defer();
+  var g = {
+    'name': game.game.name,
+    'children': []
+  };
+
+  var gameViewers = game.viewers;
+  var otherStreamViewers = gameViewers;
+  this.getGameStreams(g.name).then(function(streams) {
+
+    // add each of the streams to our game object
+    angular.forEach(streams, function(stream, i) {
+      var s = {
+        'name': stream.channel.name,
+        'viewers': stream.viewers
+      };
+      g.children.push(s);
+      otherStreamViewers = otherStreamViewers - stream.viewers;
+    });
+
+    // add other stream option
+    var os = {};
+    os.name = 'Other Streams';
+    os.viewers = otherStreamViewers;
+    g.children.push(os);
+
+    deferred.resolve(g);
+
+  });
+
+  return deferred.promise;
+};
+
+service.prototype.getGames = function() {
+  var deferred = this._q.defer();
+  this.games = {
+    'name': 'games',
+    'children': []
+  };
+  this.getStreamSummary().then(function(streamSummary) {
+    var totalViewers = streamSummary.viewers;
+    var otherGamesViewers = totalViewers;
+    this._twitch.get('games/top').then(function(data) {
+      var gamesToFormat = data.top.length;
+      angular.forEach(data.top, function(game, i) {
+        otherGamesViewers = otherGamesViewers - game.viewers;
+        this.formatGame(game).then(function(formattedGame) {
+          this.games.children.push(formattedGame);
+          if (!--gamesToFormat) {
+            var g = {
+              'name': 'Other Games',
+              'children': [{
+                'name': 'Other Streams',
+                'viewers': otherGamesViewers
+              }]
+            };
+            deferred.resolve(this.games);
+          }
+        }.bind(this));
+      }.bind(this));
+    }.bind(this));
+  }.bind(this));
+  return deferred.promise;
+};
+
+module.exports = service;

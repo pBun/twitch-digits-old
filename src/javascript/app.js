@@ -2,19 +2,19 @@ var angular = require('angular');
 var ngRoute = require('angular-route');
 var TwitchModule = require('./components/twitchApi/twitch');
 var CustomFilters = require('./components/customFilters/customFilters');
-var GamesCtrl = require('./app/games.controller');
+var GamesService = require('./app/games.service');
+var GamesDirective = require('./app/games.directive');
 
 var app = angular.module('testApp', ['ngRoute', CustomFilters.name, TwitchModule.name]);
-
-app.controller('GamesCtrl', GamesCtrl);
+app.service('Games', GamesService);
+app.directive(GamesDirective.DIRECTIVE_NAME, GamesDirective);
 
 // routes
 app.config(['$routeProvider',
 function($routeProvider) {
   $routeProvider.
     when('/', {
-      templateUrl: '/templates/games.html',
-      controller: 'GamesCtrl'
+      templateUrl: '/templates/games.html'
     }).
     otherwise({
       redirectTo: '/'
