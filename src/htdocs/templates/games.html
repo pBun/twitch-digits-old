@@ -6,6 +6,12 @@
             <div class="field">
                 <label for="">Viewers: </label>
                 <span data-ng-bind="game.viewers"></span>
+                (<span data-ng-bind="game.viewers / streams.viewers | percent"></span>)
+            </div>
+            <div class="field">
+                <label for="">Channels: </label>
+                <span data-ng-bind="game.channels"></span>
+                (<span data-ng-bind="game.channels / streams.channels | percent"></span>)
             </div>
             <img data-ng-src="{{game.game.box.large}}" alt="game.game.name">
         </li>

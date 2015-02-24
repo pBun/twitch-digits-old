@@ -18,10 +18,20 @@ appController.prototype.init = function() {
 
   ctrl._scope.games = [];
 
-  ctrl._twitch.get('games/top').then(function(data) {
-    console.log(data);
-    ctrl._scope.games = data.top;
+  ctrl._twitch.get('streams/summary')
+  .then(function(data) {
+    ctrl._scope.streams = {};
+    ctrl._scope.streams.viewers = data.viewers;
+    ctrl._scope.streams.channels = data.channels;
+
+    ctrl._twitch.get('games/top')
+    .then(function(data) {
+      ctrl._scope.games = data.top;
+      console.log(data);
+    });
+
   });
+
 };
 
 module.exports = appController;
