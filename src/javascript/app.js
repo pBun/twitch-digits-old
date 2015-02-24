@@ -12,9 +12,6 @@ app.config(['$routeProvider',
 function($routeProvider) {
   $routeProvider.
     when('/', {
-      templateUrl: '/templates/splash.html'
-    }).
-    when('/games', {
       templateUrl: '/templates/games.html',
       controller: 'GamesCtrl'
     }).
