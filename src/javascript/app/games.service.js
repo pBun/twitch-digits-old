@@ -34,7 +34,9 @@ service.prototype.getGameStreams = function(gameName, streamLimit) {
 service.prototype.formatGame = function(game, streamLimit) {
   var deferred = this._q.defer();
   var g = {
+    'type': 'game',
     'name': game.game.name,
+    'image': game.game.box.large,
     'viewers': game.viewers,
     'children': []
   };
@@ -46,7 +48,9 @@ service.prototype.formatGame = function(game, streamLimit) {
     // add each of the streams to our game object
     angular.forEach(streams, function(stream, i) {
       var s = {
+        'type': 'stream',
         'name': stream.channel.name,
+        'image': stream.channel.logo,
         'viewers': stream.viewers
       };
       g.children.push(s);
@@ -54,9 +58,11 @@ service.prototype.formatGame = function(game, streamLimit) {
     });
 
     // add other stream option
-    var os = {};
-    os.name = 'Other Streams';
-    os.viewers = otherStreamViewers;
+    var os = {
+      'type': 'stream',
+      'name': 'Other Streams',
+      'viewers': otherStreamViewers
+    };
     g.children.push(os);
 
     deferred.resolve(g);
@@ -72,6 +78,7 @@ service.prototype.getGames = function(opts) {
   opts.gameLimit = opts.gameLimit || 10;
   opts.streamLimit = opts.streamLimit || 5;
   this.games = {
+    'type': 'root',
     'name': 'games',
     'children': []
   };
@@ -86,9 +93,11 @@ service.prototype.getGames = function(opts) {
           this.games.children.push(formattedGame);
           if (!--gamesToFormat) {
             var g = {
+              'type': 'game',
               'name': 'Other Games',
               'viewers': otherGamesViewers,
               'children': [{
+                'type': 'stream',
                 'name': 'Other Streams',
                 'viewers': otherGamesViewers
               }]
