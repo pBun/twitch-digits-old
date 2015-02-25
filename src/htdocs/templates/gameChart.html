@@ -1,0 +1,21 @@
+<div>
+  <div id="main">
+    <div id="sequence"></div>
+    <div id="chart">
+      <div id="explanation">
+        <div class="stream-wrapper" data-ng-show="chart.current.type === 'stream'">
+          <span id="percentage">{{ chart.current.viewers / chart.currentGame.viewers | percent : 1}}</span><br/>
+          of all <span>{{chart.currentGame.name}}</span> viewers are currently watching {{chart.current.name}}
+        </div>
+        <div class="game-wrapper" data-ng-show="chart.current.type === 'game'">
+          <span id="percentage">{{ chart.current.viewers / gameData.viewers | percent : 1}}</span><br/>
+          of all viewers are currently watching {{chart.current.name}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar">
+    <input type="checkbox" id="togglelegend"> Legend<br/>
+    <div id="legend" style="visibility: hidden;"></div>
+  </div>
+</div>

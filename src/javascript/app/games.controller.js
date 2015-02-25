@@ -2,31 +2,32 @@ var angular = require('angular');
 
 var appController = function($scope, Games) {
 
-  this._scope = $scope;
+  this.scope = $scope;
   this._games = Games;
-  this._chart = {};
 
 };
 appController.$inject = ['$scope', 'Games'];
 
 appController.prototype.init = function(el) {
 
-  this._scope = {};
+  this.scope.gameData = {};
+  this.chart = this.scope.chart = {};
 
   this.initChart(el);
 
   this._games.getGames({
     'gameLimit': 10,
     'streamLimit': 5
-  }).then(function(games) {
-    this.buildChart(games, el);
+  }).then(function(gameData) {
+    this.scope.gameData = gameData;
+    this.buildChart(gameData, el);
   }.bind(this));
 
 };
 
 appController.prototype.initChart = function(el) {
-  var chart = this._chart;
-  chart.wrapper = el[0];
+  var chart = this.chart;
+  chart.wrapper = el[0].querySelector('#main');
 
   chart.width = chart.wrapper.offsetWidth;
   chart.height = chart.wrapper.offsetHeight;
@@ -35,7 +36,7 @@ appController.prototype.initChart = function(el) {
   // make `colors` an ordinal scale
   chart.colors = d3.scale.category20();
 
-  chart.vis = d3.select('#main').append('svg:svg')
+  chart.vis = d3.select(chart.wrapper).append('svg:svg')
       .attr('width', chart.width)
       .attr('height', chart.height)
       .append('svg:g')
@@ -56,23 +57,16 @@ appController.prototype.initChart = function(el) {
 
 appController.prototype.buildChart = function(chartData, el) {
 
-  var chart = this._chart;
-
-  // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
-  var b = {
-      w: 275, h: 30, s: 3, t: 10
-  };
+  var chart = this.chart;
+  var scope = this.scope;
 
   // Total size of all segments; we set this later, after loading the data.
-  var totalSize = 0;
+  chart.totalViewers = chartData.viewers;
 
   createVisualization(chartData);
 
   // Main function to draw and set up the visualization, once we have the data.
   function createVisualization(json) {
-
-      // Basic setup of page elements.
-      initializeBreadcrumbTrail();
 
       d3.select('#togglelegend').on('click', toggleLegend);
 
@@ -112,69 +106,48 @@ appController.prototype.buildChart = function(chartData, el) {
           .attr('d', chart.arc)
           .attr('fill-rule', 'evenodd')
           .style('fill', function(d) { return chart.colors(d.name); })
-          .style('opacity', 1)
           .on('mouseover', mouseover);
 
       // Add the mouseleave handler to the bounding circle.
       d3.select('#container').on('mouseleave', mouseleave);
 
-      // Get total size of the tree = value of root node from partition.
-      totalSize = path.node().__data__.value;
+      chart.viewers = path.node().__data__.value;
+
   };
 
-  // Fade all but the current sequence, and show it in the breadcrumb trail.
+  // Fade all but the current sequence
   function mouseover(d) {
 
-    var percentage = (100 * d.value / totalSize).toPrecision(3);
-    var percentageString = percentage + '%';
-    if (percentage < 0.1) {
-      percentageString = '< 0.1%';
-    }
-
-    d3.select('#percentage')
-        .text(percentageString);
-
-    d3.select('#explanation')
-        .style('visibility', '');
-
-    var sequenceArray = getAncestors(d);
-    updateBreadcrumbs(sequenceArray, percentageString);
-
-    // Fade all the segments.
-    d3.selectAll('path')
-        .style('opacity', 0.3);
+    // Update current chart data
+    scope.chart.current = d;
+    scope.chart.currentGame = (d.type === 'stream') ? d.parent : d;
+    scope.$apply();
 
     // Then highlight only those that are an ancestor of the current segment.
-    chart.vis.selectAll('path')
+    var sequenceArray = getAncestors(d);
+    chart.vis
+      .classed('active', true)
+      .selectAll('path')
+        .classed('current', false)
         .filter(function(node) {
-                  return (sequenceArray.indexOf(node) >= 0);
-                })
-        .style('opacity', 1);
+          return (sequenceArray.indexOf(node) >= 0);
+        })
+        .classed('current', true);
   }
 
   // Restore everything to full opacity when moving off the visualization.
   function mouseleave(d) {
 
-    // Hide the breadcrumb trail
-    d3.select('#trail')
-        .style('visibility', 'hidden');
-
-    // Deactivate all segments during transition.
-    d3.selectAll('path').on('mouseover', null);
+    // Unset current chart data
+    chart.current = null;
+    chart.currentGame = null;
+    scope.$apply();
 
     // Transition each segment to full opacity and then reactivate it.
-    d3.selectAll('path')
-        .transition()
-        .duration(1000)
-        .style('opacity', 1)
-        .each('end', function() {
-                d3.select(this).on('mouseover', mouseover);
-              });
-
-    d3.select('#explanation')
-        .transition()
-        .duration(1000)
-        .style('visibility', 'hidden');
+    chart.vis
+      .classed('active', false)
+      .selectAll('path')
+        .classed('current', false);
   }
 
   // Given a node in a partition layout, return an array of all of its ancestor
@@ -187,77 +160,6 @@ appController.prototype.buildChart = function(chartData, el) {
       current = current.parent;
     }
     return path;
-  }
-
-  function initializeBreadcrumbTrail() {
-
-    // Add the svg area.
-    var trail = d3.select('#sequence').append('svg:svg')
-        .attr('width', chart.width)
-        .attr('height', 50)
-        .attr('id', 'trail');
-    // Add the label at the end, for the percentage.
-    trail.append('svg:text')
-      .attr('id', 'endlabel')
-      .style('fill', '#000');
-  };
-
-  // Generate a string that describes the points of a breadcrumb polygon.
-  function breadcrumbPoints(d, i) {
-    var points = [];
-    points.push('0,0');
-    points.push(b.w + ',0');
-    points.push(b.w + b.t + ',' + (b.h / 2));
-    points.push(b.w + ',' + b.h);
-    points.push('0,' + b.h);
-    if (i > 0) { // Leftmost breadcrumb; don't include 6th vertex.
-      points.push(b.t + ',' + (b.h / 2));
-    }
-    return points.join(' ');
-  }
-
-  // Update the breadcrumb trail to show the current sequence and percentage.
-  function updateBreadcrumbs(nodeArray, percentageString) {
-
-    // Data join; key function combines name and depth (= position in sequence).
-    var g = d3.select('#trail')
-        .selectAll('g')
-        .data(nodeArray, function(d) { return d.name + d.depth; });
-
-    // Add breadcrumb and label for entering nodes.
-    var entering = g.enter().append('svg:g');
-
-    entering.append('svg:polygon')
-        .attr('points', breadcrumbPoints)
-        .style('fill', function(d) { return chart.colors(d.name); });
-
-    entering.append('svg:text')
-        .attr('x', (b.w + b.t) / 2)
-        .attr('y', b.h / 2)
-        .attr('dy', '0.35em')
-        .attr('text-anchor', 'middle')
-        .text(function(d) { return d.name; });
-
-    // Set position for entering and updating nodes.
-    g.attr('transform', function(d, i) {
-      return 'translate(' + i * (b.w + b.s) + ', 0)';
-    });
-
-    // Remove exiting nodes.
-    g.exit().remove();
-
-    // Now move and update the percentage at the end.
-    d3.select('#trail').select('#endlabel')
-        .attr('x', (nodeArray.length + 0.5) * (b.w + b.s))
-        .attr('y', b.h / 2)
-        .attr('dy', '0.35em')
-        .attr('text-anchor', 'middle')
-        .text(percentageString);
-
-    // Make the breadcrumb trail visible, if it's hidden.
-    d3.select('#trail')
-        .style('visibility', '');
-
   }
 
   function drawLegend() {

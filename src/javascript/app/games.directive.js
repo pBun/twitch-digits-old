@@ -1,6 +1,6 @@
 var angular = require('angular');
 var GamesController = require('./games.controller');
-var GamesTemplate = require('./games.html');
+
 var d3 = require('d3');
 
 var appDirective = function($window) {
@@ -12,9 +12,10 @@ var appDirective = function($window) {
     controller: GamesController,
     link: function(scope, element, attrs, ctrl) {
         ctrl.init(element);
+        scope.test = 10;
     },
     replace: true,
-    template: GamesTemplate
+    templateUrl: '/templates/gameChart.html'
   };
 };
 appDirective.$inject = ['$window'];

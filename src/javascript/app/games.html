@@ -3,8 +3,10 @@
     <div id="sequence"></div>
     <div id="chart">
       <div id="explanation" style="visibility: hidden;">
-        <span id="percentage"></span><br/>
-        of live viewers are watching this game/stream
+        <span id="percentage">{{chart.current.viewers / gameData.viewers | percent : 1}}</span><br/>
+        of live viewers are watching
+        <span data-ng-show="chat.currentStream">{{chat.currentStream.name}} play<span>
+        {{chart.currentGame.name}}
       </div>
     </div>
   </div>

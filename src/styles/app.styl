@@ -16,6 +16,7 @@ body {
 #main {
   float: left;
   width: 550px;
+  height: 100%;
 }
 
 #sidebar {
@@ -43,6 +44,15 @@ body {
 
 #chart path {
   stroke: #fff;
+}
+path {
+    transition: opacity 0.2s ease-out;
+}
+.active path {
+    opacity: 0.3;
+}
+.active path.current {
+    opacity: 1;
 }
 
 #explanation {

@@ -60,7 +60,7 @@ service.prototype.formatGame = function(game, streamLimit) {
     // add other stream option
     var os = {
       'type': 'stream',
-      'name': 'Other Streams',
+      'name': 'other streams',
       'viewers': otherStreamViewers
     };
     g.children.push(os);
@@ -85,6 +85,7 @@ service.prototype.getGames = function(opts) {
   this.getStreamSummary().then(function(streamSummary) {
     var totalViewers = streamSummary.viewers;
     var otherGamesViewers = totalViewers;
+    this.games.viewers = totalViewers;
     this._twitch.get('games/top?limit=' + opts.gameLimit).then(function(data) {
       var gamesToFormat = data.top.length;
       angular.forEach(data.top, function(game, i) {
@@ -94,11 +95,11 @@ service.prototype.getGames = function(opts) {
           if (!--gamesToFormat) {
             var g = {
               'type': 'game',
-              'name': 'Other Games',
+              'name': 'other games',
               'viewers': otherGamesViewers,
               'children': [{
                 'type': 'stream',
-                'name': 'Other Streams',
+                'name': 'other streams',
                 'viewers': otherGamesViewers
               }]
             };
