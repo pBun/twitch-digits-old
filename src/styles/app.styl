@@ -10,15 +10,51 @@ body {
 }
 
 .games {
-    height: 650px;
+    height: 550px;
 }
 
-.games .game:before {
-    content: attr(data-name);
-    display: block;
+#main {
+  float: left;
+  width: 550px;
 }
 
-path {
+#sidebar {
+  float: right;
+  width: 250px;
+}
+
+#sequence {
+  width: 600px;
+  height: 70px;
+}
+
+#legend {
+  padding: 10px 0 0 3px;
+}
+
+#sequence text, #legend text {
+  font-weight: 600;
+  fill: #fff;
+}
+
+#chart {
+  position: relative;
+}
+
+#chart path {
   stroke: #fff;
-  fill-rule: evenodd;
+}
+
+#explanation {
+  position: absolute;
+  top: 235px;
+  left: 205px;
+  width: 140px;
+  text-align: center;
+  color: #666;
+  z-index: -1;
+}
+
+#percentage {
+  font-size: 2.5em;
 }
