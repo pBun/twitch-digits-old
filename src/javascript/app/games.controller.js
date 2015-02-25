@@ -89,31 +89,6 @@ appController.prototype.buildChart = function(chartData) {
       .attrTween('d', arcTweenData);
   // });
 
-  var text = d3.select('body').selectAll('text').data(nodes);
-  var textEnter = text.enter().append('text')
-      .style('fill-opacity', 1)
-      .style('fill', function(d) {
-        return brightness(d3.rgb(color(d))) < 125 ? '#eee' : '#000';
-      })
-      .attr('text-anchor', function(d) {
-        return chart.x(d.x + d.dx / 2) > Math.PI ? 'end' : 'start';
-      })
-      .attr('dy', '.2em')
-      .attr('transform', function(d) {
-        var multiline = (d.name || '').split(' ').length > 1,
-            angle = chart.x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-            rotate = angle + (multiline ? -.5 : 0);
-        return 'rotate(' + rotate + ')translate(' + (chart.y(d.y) + 0) + ')rotate(' + (angle > 90 ? -180 : 0) + ')';
-      })
-      .on('click', click);
-  textEnter.append('tspan')
-      .attr('x', 0)
-      .text(function(d) { return d.depth ? d.name.split(' ')[0] : ''; });
-  textEnter.append('tspan')
-      .attr('x', 0)
-      .attr('dy', '1em')
-      .text(function(d) { return d.depth ? d.name.split(' ')[1] || '' : ''; });
-
   function click(d) {
     node = d;
     path.transition()
