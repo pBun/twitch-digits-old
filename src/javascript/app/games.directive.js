@@ -11,7 +11,7 @@ var appDirective = function($window) {
     },
     controller: GamesController,
     link: function(scope, element, attrs, ctrl) {
-
+        ctrl.init(element);
     },
     replace: true,
     template: GamesTemplate

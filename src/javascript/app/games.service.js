@@ -22,25 +22,26 @@ service.prototype.getStreamSummary = function() {
   return deferred.promise;
 };
 
-service.prototype.getGameStreams = function(gameName) {
+service.prototype.getGameStreams = function(gameName, streamLimit) {
   var deferred = this._q.defer();
   var encodedGameName = encodeURIComponent(gameName);
-  this._twitch.get('streams?game=' + encodedGameName).then(function(data) {
+  this._twitch.get('streams?limit=' + streamLimit + '&game=' + encodedGameName).then(function(data) {
     deferred.resolve(data.streams);
   });
   return deferred.promise;
 };
 
-service.prototype.formatGame = function(game) {
+service.prototype.formatGame = function(game, streamLimit) {
   var deferred = this._q.defer();
   var g = {
     'name': game.game.name,
+    'viewers': game.viewers,
     'children': []
   };
 
   var gameViewers = game.viewers;
   var otherStreamViewers = gameViewers;
-  this.getGameStreams(g.name).then(function(streams) {
+  this.getGameStreams(g.name, streamLimit).then(function(streams) {
 
     // add each of the streams to our game object
     angular.forEach(streams, function(stream, i) {
@@ -65,8 +66,11 @@ service.prototype.formatGame = function(game) {
   return deferred.promise;
 };
 
-service.prototype.getGames = function() {
+service.prototype.getGames = function(opts) {
   var deferred = this._q.defer();
+  opts = opts || {};
+  opts.gameLimit = opts.gameLimit || 10;
+  opts.streamLimit = opts.streamLimit || 5;
   this.games = {
     'name': 'games',
     'children': []
@@ -74,15 +78,16 @@ service.prototype.getGames = function() {
   this.getStreamSummary().then(function(streamSummary) {
     var totalViewers = streamSummary.viewers;
     var otherGamesViewers = totalViewers;
-    this._twitch.get('games/top').then(function(data) {
+    this._twitch.get('games/top?limit=' + opts.gameLimit).then(function(data) {
       var gamesToFormat = data.top.length;
       angular.forEach(data.top, function(game, i) {
         otherGamesViewers = otherGamesViewers - game.viewers;
-        this.formatGame(game).then(function(formattedGame) {
+        this.formatGame(game, opts.streamLimit).then(function(formattedGame) {
           this.games.children.push(formattedGame);
           if (!--gamesToFormat) {
             var g = {
               'name': 'Other Games',
+              'viewers': otherGamesViewers,
               'children': [{
                 'name': 'Other Streams',
                 'viewers': otherGamesViewers
