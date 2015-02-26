@@ -10,9 +10,13 @@ appController.$inject = ['$scope', 'Games'];
 
 appController.prototype.init = function(el) {
 
+  // Set scope variables
   this.scope.gameData = {};
   this.scope.chart = this.chart = {};
+  this.scope.chart.efficiencyLimit = 0.01; // hide anything below 0.01% or 0.0002 radians
   this.scope.refreshChartData = this.refreshChartData.bind(this);
+  this.scope.gameLimit = 100;
+  this.scope.streamLimit = 100;
 
   this.initChart(el);
   this.refreshChartData();
@@ -21,8 +25,8 @@ appController.prototype.init = function(el) {
 
 appController.prototype.refreshChartData = function() {
   this._games.getGames({
-    'gameLimit': 100,
-    'streamLimit': 100
+    'gameLimit': this.scope.gameLimit,
+    'streamLimit': this.scope.streamLimit
   }).then(function(gameData) {
     this.scope.gameData = gameData;
     this.buildChart(gameData);
@@ -90,10 +94,9 @@ appController.prototype.buildChart = function(chartData) {
   chart.root = chartData;
 
   // For efficiency, filter nodes to keep only those large enough to see.
-  chart.efficiencyLimit = 0.0001; // hide anything below 0.01% or 0.0002 radians
   var nodes = chart.partition.nodes(chart.root)
       .filter(function(d) {
-          return (d.dx > chart.efficiencyLimit * 2);
+          return (d.dx > (chart.efficiencyLimit / 100) * 2);
       });
 
   var uniqueNames = (function(a) {
