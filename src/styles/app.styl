@@ -130,6 +130,35 @@ a {
   stroke: #fff;
 }
 
+.stream-wrapper,
+.game-wrapper {
+  background: #6441a5;
+  color: #fefefe;
+  border-radius: 50%;
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  padding: 38px 20px;
+  box-sizing: border-box;
+}
+
+.back-info {
+  position: absolute;
+  background: #6441a5;
+  color: #fefefe;
+  border-radius: 50%;
+  width: 75px;
+  height: 75px;
+  padding: 20px 20px;
+  bottom: 15%;
+  right: 15%;
+}
+
 svg {
   position: absolute;
   z-index: 1;
@@ -154,16 +183,19 @@ path {
 
 #explanation {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   margin: auto;
   left: 0;
   right: 0;
-  width: 140px;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  height: 58%;
+  border-radius: 50%;
   text-align: center;
   color: #666;
-  z-index: 9;
   pointer-events: none;
+  background: no-repeat;
+  background-size: cover;
 }
 #percentage {
   font-size: 2.5em;
