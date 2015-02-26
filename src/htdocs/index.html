@@ -17,7 +17,7 @@
         <p>a breakdown of live twitch.tv viewers</p>
       </div>
     </header>
-    <main class="main-wrapper" data-ng-controller="MainController" data-ng-class="{ready: chart.ready}">
+    <main class="main-wrapper" data-ng-cloak data-ng-controller="MainController" data-ng-class="{ready: chart.ready}">
       <a class="controls-trigger" data-ng-click="showControls = !showControls">
         {{!showControls ? 'open' : 'close'}} controls
       </a>
