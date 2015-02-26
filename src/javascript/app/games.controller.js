@@ -174,6 +174,13 @@ appController.prototype.buildChart = function(chartData) {
   // Restore everything to full opacity when moving off the visualization.
   function mouseleave(d) {
 
+    // If we are zoomed, default to current game
+    if (chart.zoomed) {
+      chart.current = chart.currentGame;
+      scope.$apply();
+      return;
+    }
+
     // Unset current chart data
     chart.current = null;
     chart.currentGame = null;
