@@ -90,9 +90,10 @@ appController.prototype.buildChart = function(chartData) {
   chart.root = chartData;
 
   // For efficiency, filter nodes to keep only those large enough to see.
+  chart.efficiencyLimit = 0.0001; // hide anything below 0.01% or 0.0002 radians
   var nodes = chart.partition.nodes(chart.root)
       .filter(function(d) {
-          return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
+          return (d.dx > chart.efficiencyLimit * 2);
       });
 
   var uniqueNames = (function(a) {
