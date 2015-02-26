@@ -1,5 +1,5 @@
 <div class="chart-wrapper" data-ng-class="{'chart-zoomed': chart.zoomed}">
-  <div class="explanation" style="background-image:url({{chart.current.image}});">
+  <div class="explanation" style="{{chart.current.image|bgImage}}">
     <div class="info stream-wrapper" data-ng-show="chart.current.type === 'stream'">
       <p class="inner-info">
         <span class="percentage">{{ chart.current.viewers / chart.currentGame.viewers | percent : 1}}</span><br/>
