@@ -24,6 +24,7 @@ appController.prototype.init = function(el) {
 };
 
 appController.prototype.refreshChartData = function() {
+  this.chart.ready = false;
   this._games.getGames({
     'gameLimit': this.scope.gameLimit,
     'streamLimit': this.scope.streamLimit
