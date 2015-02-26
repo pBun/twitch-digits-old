@@ -1,5 +1,7 @@
 var angular = require('angular');
 
+var colorbrewer = require('../vendor/colorbrewer');
+
 var appController = function($scope, Games) {
 
   this.scope = $scope;
@@ -55,7 +57,8 @@ appController.prototype.initChart = function(el) {
     .range([0, chart.radius]);
 
   // make `colors` an ordinal scale
-  chart.colors = chart.colors || d3.scale.category20();
+  chart.colors = chart.colors || d3.scale.ordinal()
+    .range(colorbrewer.Spectral[11]);
 
   chart.visWrapper = (chart.visWrapper || d3.select(chart.wrapper).append('svg:svg'))
       .attr('width', chart.width)
