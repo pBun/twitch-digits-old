@@ -10,8 +10,21 @@ body {
   transform: translateZ(0);
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  color: #555;
-  font-family: sans-serif;
+  color: #32323e;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  line-height: 1.2em;
+}
+
+a {
+  text-decoration: none;
+  color: #6441a5;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease-in-out;
+  &:hover, &:focus {
+    color: #6441a5;
+    border-color: #6441a5;
+  }
 }
 
 #chart, svg {
@@ -33,11 +46,20 @@ body {
   width: 100%;
   display: block;
 }
-
+.header {
+  height: 10%;
+  text-align: center;
+  .logo {
+    font-weight: 100;
+    &:hover, &:focus {
+      border-color: transparent;
+    }
+  }
+}
 .games {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 90%;
 }
 
 @media screen and (max-width: 800px) {
@@ -47,7 +69,8 @@ body {
 }
 .controls-trigger {
   position: absolute;
-  top: 10px;
+  margin-top: 10px;
+  top: -11.11%;
   left: 10px;
   cursor: pointer;
   z-index: 999;
@@ -57,10 +80,11 @@ body {
   display: inline-block;
   z-index: 99;
   left: 0;
-  top: 0;
+  top: -11.11%;
   padding: 50px 20px 20px;
   border: 1px solid #eee;
-  background: #fff;
+  border-width: 0 1px 1px 0;
+  background: #fefefe;
   border-radius: 0 0 0.5em 0;
   transform: translateX(-100%);
   transition: transform 0.2s ease-in;
@@ -73,10 +97,15 @@ body {
   position: absolute;
   bottom: 5px;
   right: 5px;
-  opacity: 0.5;
-  transition: opacity 0.2s ease-in;
   z-index: 9999;
-  &:hover {
+  color: #999;
+  a {
+    color: #999;
+    &:hover, &:focus {
+      border-color: #999;
+    }
+  }
+  &:hover, &:focus {
     transition-timing-function: ease-out;
     opacity: 1;
   }
@@ -100,7 +129,7 @@ svg {
 }
 
 path {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease-in-out;
   cursor: pointer;
 }
 

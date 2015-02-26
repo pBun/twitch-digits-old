@@ -23,11 +23,11 @@
       </div>
       <div class="stream-wrapper" data-ng-show="chart.current.type === 'stream'">
         <span id="percentage">{{ chart.current.viewers / chart.currentGame.viewers | percent : 1}}</span><br/>
-        of all <span>{{chart.currentGame.name}}</span> viewers are currently watching {{chart.current.name}}
+        of all <strong>{{chart.currentGame.name}}</strong> viewers are currently watching <strong>{{chart.current.name}}</strong>
       </div>
       <div class="game-wrapper" data-ng-show="chart.current.type === 'game'">
         <span id="percentage">{{ chart.current.viewers / gameData.viewers | percent : 1}}</span><br/>
-        of all viewers are currently watching {{chart.current.name}}
+        of all viewers are currently watching <strong>{{chart.current.name}}</strong>
       </div>
     </div>
   </div>
