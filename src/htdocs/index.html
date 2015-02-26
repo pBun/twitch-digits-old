@@ -17,10 +17,10 @@
         <p>a breakdown of live twitch.tv viewers</p>
       </div>
     </header>
-    <main class="main-wrapper" data-ng-cloak data-ng-controller="MainController" data-ng-class="{ready: chart.ready}">
-      <a class="controls-trigger" data-ng-click="showControls = !showControls">
-        {{!showControls ? 'open' : 'close'}} controls
-      </a>
+    <main class="main-wrapper" data-ng-controller="MainController" data-ng-class="{ready: chart.ready}">
+      <a class="controls-trigger"
+        data-ng-bind="(!showControls ? 'open' : 'close') + ' controls'"
+        data-ng-click="showControls = !showControls"></a>
       <div data-ng-class="{open:showControls}" class="control-panel">
         <div class="field">
           <label for="game-limit">Game limit</label>
