@@ -1,21 +1,4 @@
-<div data-ng-class="{ready: chart.ready}">
-  <div class="loader-walk">
-    <div></div><div></div><div></div><div></div><div></div>
-  </div>
-  <a class="controls-trigger" data-ng-click="showControls = !showControls">{{!showControls ? 'open' : 'close'}} controls</a>
-  <div data-ng-class="{open:showControls}" class="control-panel">
-    <div class="field">
-      <label for="game-limit">Game limit</label>
-      <input id="game-limit" type="number" min="0" max="100" step="1" data-ng-model="gameLimit">
-    </div>
-    <div class="field">
-      <label for="stream-limit">Stream limit per game</label>
-      <input id="stream-limit" type="number" min="0" max="100" step="1" data-ng-model="streamLimit">
-    </div>
-    <div class="field">
-      <button class="refresh" data-ng-click="refreshChartData()">Refresh data</button>
-    </div>
-  </div>
+<div class="chart-wrapper">
   <div class="explanation" style="background-image:url({{chart.current.image}});">
     <div class="info stream-wrapper" data-ng-show="chart.current.type === 'stream'">
       <p class="inner-info">

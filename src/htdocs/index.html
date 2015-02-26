@@ -16,8 +16,32 @@
         <p>live twitch stream viewer breakdown</p>
       </div>
     </header>
-    <main class="main-wrapper">
-      <div class="games" data-games></div>
+    <main class="main-wrapper" data-ng-controller="MainController" data-ng-class="{ready: chart.ready}">
+      <a class="controls-trigger" data-ng-click="showControls = !showControls">
+        {{!showControls ? 'open' : 'close'}} controls
+      </a>
+      <div data-ng-class="{open:showControls}" class="control-panel">
+        <div class="field">
+          <label for="game-limit">Game limit</label>
+          <input id="game-limit" type="number" min="0" max="100" step="1" data-ng-model="chart.gameLimit">
+        </div>
+        <div class="field">
+          <label for="stream-limit">Stream limit per game</label>
+          <input id="stream-limit" type="number" min="0" max="100" step="1" data-ng-model="chart.streamLimit">
+        </div>
+        <div class="field">
+          <button class="refresh" data-ng-click="chart.refresh = true">Refresh data</button>
+        </div>
+      </div>
+      <div class="games"
+        data-games data-game-limit="chart.gameLimit"
+        data-stream-limit="chart.streamLimit"
+        data-refresh="chart.refresh"
+        data-ready="chart.ready">
+      </div>
+      <div class="loader-walk">
+        <div></div><div></div><div></div><div></div><div></div>
+      </div>
     </main>
     <span class="author">
       <a href="http://dustinboersma.com">dustin boersma</a> / <a href="http://twitch.tv/pBun">pBun</a>

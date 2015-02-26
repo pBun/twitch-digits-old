@@ -7,7 +7,10 @@ var appDirective = function($window) {
   return {
     restrict: 'EA',
     scope: {
-
+        refresh: '=?',
+        ready: '=?',
+        gameLimit: '=?',
+        streamLimit: '=?'
     },
     controller: GamesController,
     link: function(scope, element, attrs, ctrl) {
@@ -15,7 +18,6 @@ var appDirective = function($window) {
         ctrl.init(element);
 
         angular.element(window).on('resize', ctrl.handleWindowResize.bind(ctrl));
-
     },
     replace: true,
     templateUrl: '/templates/gameChart.html'

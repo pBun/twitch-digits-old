@@ -15,25 +15,32 @@ appController.prototype.init = function(el) {
   // Set scope variables
   this.scope.gameData = {};
   this.scope.chart = this.chart = {};
-  this.scope.chart.efficiencyLimit = 0.01; // hide anything below 0.01% or 0.0002 radians
-  this.scope.refreshChartData = this.refreshChartData.bind(this);
-  this.scope.gameLimit = 100;
-  this.scope.streamLimit = 100;
 
   this.initChart(el);
   this.refreshChartData();
 
+  this.scope.$watch('refresh', function(newVal) {
+    if (newVal && this.scope.ready) {
+      this.refreshChartData();
+      this.scope.refresh = false;
+    }
+  }.bind(this));
+
 };
 
 appController.prototype.refreshChartData = function() {
-  this.chart.ready = false;
+  this.scope.ready = false;
   this._games.getGames({
-    'gameLimit': this.scope.gameLimit,
-    'streamLimit': this.scope.streamLimit
+    'gameLimit': this.scope.gameLimit || 100,
+    'streamLimit': this.scope.streamLimit || 100
   }).then(function(gameData) {
     this.scope.gameData = gameData;
     this.buildChart(gameData);
-    this.chart.ready = true;
+    this.scope.ready = true;
+  }.bind(this),
+  function(error) {
+    console.log('ERROR: ' + error);
+    this.scope.ready = true;
   }.bind(this));
 };
 
@@ -104,7 +111,8 @@ appController.prototype.buildChart = function(chartData) {
   // For efficiency, filter nodes to keep only those large enough to see.
   var nodes = chart.partition.nodes(chart.root)
       .filter(function(d) {
-          return (d.dx > (chart.efficiencyLimit / 100) * 2);
+          // hide anything below 0.01% or 0.0002 radians
+          return (d.dx > ((chart.efficiencyLimit || 0.01) / 100) * 2);
       });
 
   var uniqueNames = (function(a) {
