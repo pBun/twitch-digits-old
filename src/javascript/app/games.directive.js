@@ -11,8 +11,11 @@ var appDirective = function($window) {
     },
     controller: GamesController,
     link: function(scope, element, attrs, ctrl) {
+
         ctrl.init(element);
-        scope.test = 10;
+
+        angular.element(window).on('resize', ctrl.handleWindowResize.bind(ctrl));
+
     },
     replace: true,
     templateUrl: '/templates/gameChart.html'
@@ -22,3 +25,4 @@ appDirective.$inject = ['$window'];
 appDirective.DIRECTIVE_NAME = 'games';
 
 module.exports = appDirective;
+

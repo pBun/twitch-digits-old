@@ -22,9 +22,8 @@ service.prototype.getStreamSummary = function() {
   return deferred.promise;
 };
 
-service.prototype.getGameStreams = function(gameName, streamLimit) {
+service.prototype.getGameStreams = function(encodedGameName, streamLimit) {
   var deferred = this._q.defer();
-  var encodedGameName = encodeURIComponent(gameName);
   this._twitch.get('streams?limit=' + streamLimit + '&game=' + encodedGameName).then(function(data) {
     deferred.resolve(data.streams);
   });
@@ -36,6 +35,8 @@ service.prototype.formatGame = function(game, streamLimit) {
   var g = {
     'type': 'game',
     'name': game.game.name,
+    'encodedName': encodeURIComponent(game.game.name),
+    'url': 'http://twitch.tv/directory/game/' + encodeURIComponent(game.game.name),
     'image': game.game.box.large,
     'viewers': game.viewers,
     'children': []
@@ -43,7 +44,7 @@ service.prototype.formatGame = function(game, streamLimit) {
 
   var gameViewers = game.viewers;
   var otherStreamViewers = gameViewers;
-  this.getGameStreams(g.name, streamLimit).then(function(streams) {
+  this.getGameStreams(g.encodedName, streamLimit).then(function(streams) {
 
     // add each of the streams to our game object
     angular.forEach(streams, function(stream, i) {
@@ -51,6 +52,7 @@ service.prototype.formatGame = function(game, streamLimit) {
         'type': 'stream',
         'name': stream.channel.name,
         'image': stream.channel.logo,
+        'url': stream.channel.url,
         'viewers': stream.viewers
       };
       g.children.push(s);
@@ -61,6 +63,7 @@ service.prototype.formatGame = function(game, streamLimit) {
     var os = {
       'type': 'stream',
       'name': 'other streams',
+      'url': g.url,
       'viewers': otherStreamViewers
     };
     g.children.push(os);
@@ -96,10 +99,12 @@ service.prototype.getGames = function(opts) {
             var g = {
               'type': 'game',
               'name': 'other games',
+              'url': 'http://twitch.tv/directory',
               'viewers': otherGamesViewers,
               'children': [{
                 'type': 'stream',
                 'name': 'other streams',
+                'url': 'http://twitch.tv/directory/all',
                 'viewers': otherGamesViewers
               }]
             };
@@ -113,3 +118,4 @@ service.prototype.getGames = function(opts) {
 };
 
 module.exports = service;
+

@@ -1,6 +1,10 @@
 @import "vendor/normalize";
 @import "vendor/skeleton";
 
+html, body {
+  height: 100%;
+}
+
 body {
   transform: translateZ(0);
   -moz-osx-font-smoothing: grayscale;
@@ -10,61 +14,47 @@ body {
 }
 
 .games {
-    height: 550px;
-}
-
-#main {
-  float: left;
-  width: 550px;
+  position: relative;
+  width: 100%;
   height: 100%;
 }
 
-#sidebar {
-  float: right;
-  width: 250px;
-}
-
-#sequence {
-  width: 600px;
-  height: 70px;
-}
-
-#legend {
-  padding: 10px 0 0 3px;
-}
-
-#sequence text, #legend text {
-  font-weight: 600;
-  fill: #fff;
-}
-
 #chart {
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0
+  bottom: 0;
+  left: 0;
+  z-index: -1;
 }
 
 #chart path {
   stroke: #fff;
 }
+
 path {
-    transition: opacity 0.2s ease-out;
+  transition: opacity 0.2s ease-out;
 }
+
 .active path {
-    opacity: 0.3;
+  opacity: 0.3;
 }
+
 .active path.current {
-    opacity: 1;
+  opacity: 1;
 }
 
 #explanation {
   position: absolute;
-  top: 235px;
-  left: 205px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: auto;
+  left: 0;
+  right: 0;
   width: 140px;
   text-align: center;
   color: #666;
-  z-index: -1;
 }
-
 #percentage {
   font-size: 2.5em;
 }
