@@ -1,5 +1,8 @@
 <div id="main">
-  <div id="chart">
+  <div data-ng-hide="chart.ready" class="loader-walk">
+    <div></div><div></div><div></div><div></div><div></div>
+  </div>
+  <div data-ng-show="chart.ready" id="chart">
     <div id="explanation">
       <div class="game-image image-wrapper">
         <img data-ng-show="chart.current" data-ng-src="{{chart.current.image}}" alt="{{chart.current.name}}">

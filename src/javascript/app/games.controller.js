@@ -21,6 +21,7 @@ appController.prototype.init = function(el) {
   }).then(function(gameData) {
     this.scope.gameData = gameData;
     this.buildChart(gameData);
+    this.chart.ready = true;
   }.bind(this));
 
 };
