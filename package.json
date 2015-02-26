@@ -1,10 +1,14 @@
 {
-  "name": "gulp-starter",
-  "version": "2.0.0",
-  "description": "Gulp starter with common tasks and scenarios",
+  "name": "twitch-digits",
+  "version": "1.0.0",
+  "description": "A visual representation of some simple Twitch.tv statistics",
   "repository": {
     "type": "git",
-    "url": "git://github.com/pBun/gulp-starter.git"
+    "url": "git://github.com/pBun/twitch-digits.git"
+  },
+  "scripts": {
+    "start": "npm install && gulp production",
+    "dev": "gulp"
   },
   "browser": {},
   "browserify": {
