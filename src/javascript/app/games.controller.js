@@ -166,7 +166,10 @@ appController.prototype.buildChart = function(chartData) {
       .selectAll('path')
         .classed('current', false)
         .filter(function(node) {
-          return (sequenceArray.indexOf(node) >= 0);
+          var isDirectlyActive = sequenceArray.indexOf(node) >= 0;
+          var isChildOfActive = sequenceArray.indexOf(node.parent) >= 0;
+          var isActive = d.type === 'stream' ? isDirectlyActive : (isDirectlyActive || isChildOfActive);
+          return isActive;
         })
         .classed('current', true);
   }
