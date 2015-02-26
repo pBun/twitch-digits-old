@@ -69,6 +69,17 @@ body {
     transform: translateX(0);
   }
 }
+.author {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease-in;
+  z-index: 9999;
+  &:hover {
+    transition-timing-function: ease-out;
+    opacity: 1;
+  }
 }
 
 #chart {
