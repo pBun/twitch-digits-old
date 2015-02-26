@@ -1,9 +1,9 @@
-<div id="main" data-ng-class="{ready: chart.ready}">
+<div data-ng-class="{ready: chart.ready}">
   <div class="loader-walk">
     <div></div><div></div><div></div><div></div><div></div>
   </div>
   <a class="controls-trigger" data-ng-click="showControls = !showControls">{{!showControls ? 'open' : 'close'}} controls</a>
-  <div data-ng-class="{open:showControls}" id="control-panel">
+  <div data-ng-class="{open:showControls}" class="control-panel">
     <div class="field">
       <label for="game-limit">Game limit</label>
       <input id="game-limit" type="number" min="0" max="100" step="1" data-ng-model="gameLimit">
@@ -16,19 +16,18 @@
       <button class="refresh" data-ng-click="refreshChartData()">Refresh data</button>
     </div>
   </div>
-  <div id="chart">
-    <div id="explanation" style="background-image:url({{chart.current.image}});">
-      <div class="stream-wrapper" data-ng-show="chart.current.type === 'stream'">
-        <span id="percentage">{{ chart.current.viewers / chart.currentGame.viewers | percent : 1}}</span><br/>
+  <div class="explanation" style="background-image:url({{chart.current.image}});">
+    <div class="info stream-wrapper" data-ng-show="chart.current.type === 'stream'">
+      <p class="inner-info">
+        <span class="percentage">{{ chart.current.viewers / chart.currentGame.viewers | percent : 1}}</span><br/>
         of all <strong>{{chart.currentGame.name}}</strong> viewers are currently watching <strong>{{chart.current.name}}</strong>
-      </div>
-      <div class="game-wrapper" data-ng-show="chart.current.type === 'game'">
-        <span id="percentage">{{ chart.current.viewers / gameData.viewers | percent : 1}}</span><br/>
+      </p>
+    </div>
+    <div class="info game-wrapper" data-ng-show="chart.current.type === 'game'">
+      <p class="inner-info">
+        <span class="percentage">{{ chart.current.viewers / gameData.viewers | percent : 1}}</span><br/>
         of all viewers are currently watching <strong>{{chart.current.name}}</strong>
-      </div>
-      <div class="back-info">
-        <span>click to go back</span>
-      </div>
+      </p>
     </div>
   </div>
 </div>

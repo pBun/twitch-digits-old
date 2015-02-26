@@ -2,6 +2,9 @@
 @import "vendor/skeleton";
 @import "vendor/loader";
 
+/* # Global
+================================================== */
+
 html, body {
   height: 100%;
 }
@@ -31,14 +34,22 @@ a {
   }
 }
 
-#chart, svg {
+.image-wrapper img {
+  width: 100%;
+  display: block;
+}
+
+/* # Loader
+================================================== */
+
+.chart, .explanation {
   display: none;
 }
 .loader-walk {
   display: block;
 }
 .ready {
-  #chart, svg {
+  .chart, explanation {
     display: block;
   }
   .loader-walk {
@@ -46,12 +57,10 @@ a {
   }
 }
 
-.image-wrapper img {
-  width: 100%;
-  display: block;
-}
+/* # Header
+================================================== */
+
 .header {
-  height: 15%;
   text-align: center;
   h1 {
     margin-bottom: 0;
@@ -63,17 +72,30 @@ a {
     }
   }
 }
-.games {
-  position: relative;
-  width: 100%;
-  height: 80%;
+
+/* # General layout
+================================================== */
+
+.header {
+  height: 15%;
 }
 
-@media screen and (max-width: 800px) {
-  .game-image {
-    display: none;
-  }
+.main-wrapper {
+  position: relative;
+  height: 80%;
+  text-align: center;
 }
+.games {
+  position: relative;
+  display: inline-block;
+  min-height: 320px;
+  min-width: 320px;
+}
+
+
+/* # Control panel
+================================================== */
+
 .controls-trigger {
   position: absolute;
   margin-top: 10px;
@@ -82,7 +104,7 @@ a {
   cursor: pointer;
   z-index: 999;
 }
-#control-panel {
+.control-panel {
   position: absolute;
   display: inline-block;
   z-index: 99;
@@ -100,6 +122,10 @@ a {
     transform: translateX(0);
   }
 }
+
+/* # Author links
+================================================== */
+
 .author {
   position: absolute;
   bottom: 5px;
@@ -118,78 +144,18 @@ a {
   }
 }
 
-#chart {
-  position: absolute;
-  top: 0;
-  right: 0
-  bottom: 0;
-  left: 0;
-}
+/* # Explanation
+================================================== */
 
-#chart path {
-  stroke: #fff;
-}
-
-.stream-wrapper,
-.game-wrapper {
-  background: #6441a5;
-  color: #fefefe;
-  border-radius: 50%;
-  width: 50%;
-  height: 50%;
-  position: absolute;
-  margin: auto;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  padding: 38px 20px;
-  box-sizing: border-box;
-}
-
-.back-info {
-  position: absolute;
-  background: #6441a5;
-  color: #fefefe;
-  border-radius: 50%;
-  width: 75px;
-  height: 75px;
-  padding: 20px 20px;
-  bottom: 15%;
-  right: 15%;
-}
-
-svg {
-  position: absolute;
-  z-index: 1;
-}
-
-path {
-  transition: opacity 0.2s ease-in-out;
-  cursor: pointer;
-}
-
-.active path {
-  opacity: 0.3;
-}
-
-.active path.current {
-  opacity: 1;
-}
-
-.zoomed path.game {
-  opacity: 0;
-}
-
-#explanation {
+.explanation {
   position: absolute;
   margin: auto;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
-  width: 40%;
-  height: 58%;
+  width: 57.5%;
+  height: 57.5%;
   border-radius: 50%;
   text-align: center;
   color: #666;
@@ -197,7 +163,58 @@ path {
   background: no-repeat;
   background-size: cover;
 }
-#percentage {
+
+.explanation .info {
+  position: absolute;
+  background: rgba(100,65,165,0.85);
+  color: #fefefe;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 20% 10%;
+}
+.explanation .info .inner-info {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+
+.explanation .info .inner-info .percentage {
   font-size: 2.5em;
-  line-height: 1.5em;
+  line-height: 1.25em;
+}
+
+/* # Chart
+================================================== */
+
+.chart {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+}
+
+.chart path {
+  // stroke: #fff;
+  transition: opacity 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.chart.active path {
+  opacity: 0.3;
+}
+
+.chart.active path.current {
+  opacity: 1;
+}
+
+.chart.zoomed path.game {
+  opacity: 0;
 }

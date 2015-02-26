@@ -46,10 +46,13 @@ appController.prototype.initChart = function(el) {
   var chart = this.chart;
   chart.wrapper = el && el.length ? el[0] : chart.wrapper;
 
-  chart.width = chart.wrapper.offsetWidth;
-  chart.height = chart.wrapper.offsetHeight;
-  chart.radius = Math.min(chart.width, chart.height) / 2;
+  var parentEl = chart.wrapper.parentNode;
+  var parentDim = Math.min(parentEl.offsetWidth, parentEl.offsetHeight);
+  chart.width = parentDim;
+  chart.height = parentDim;
+  chart.radius = parentDim / 2;
 
+  // set up x / y scale vars for zoom
   chart.x = d3.scale.linear()
     .range([0, 2 * Math.PI]);
 
@@ -61,6 +64,7 @@ appController.prototype.initChart = function(el) {
     .range(colorbrewer.Spectral[11]);
 
   chart.visWrapper = (chart.visWrapper || d3.select(chart.wrapper).append('svg:svg'))
+      .attr('class', 'chart')
       .attr('width', chart.width)
       .attr('height', chart.height);
 
