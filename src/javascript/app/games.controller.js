@@ -16,8 +16,8 @@ appController.prototype.init = function(el) {
   this.initChart(el);
 
   this._games.getGames({
-    'gameLimit': 100,
-    'streamLimit': 100
+    'gameLimit': 10,
+    'streamLimit': 10
   }).then(function(gameData) {
     this.scope.gameData = gameData;
     this.buildChart(gameData);
@@ -33,6 +33,12 @@ appController.prototype.initChart = function(el) {
   chart.width = chart.wrapper.offsetWidth;
   chart.height = chart.wrapper.offsetHeight;
   chart.radius = Math.min(chart.width, chart.height) / 2;
+
+  chart.x = d3.scale.linear()
+    .range([0, 2 * Math.PI]);
+
+  chart.y = d3.scale.sqrt()
+    .range([0, chart.radius]);
 
   // make `colors` an ordinal scale
   chart.colors = chart.colors || d3.scale.category20();
@@ -50,6 +56,10 @@ appController.prototype.initChart = function(el) {
       .value(function(d) { return d.viewers; });
 
   chart.arc = (chart.arc || d3.svg.arc())
+    // .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x))); })
+    // .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x + d.dx))); })
+    // .innerRadius(function(d) { return Math.max(0, chart.y(d.y)); })
+    // .outerRadius(function(d) { return Math.max(0, chart.y(d.y + d.dy)); });
       .startAngle(function(d) { return d.x; })
       .endAngle(function(d) { return d.x + d.dx; })
       .innerRadius(function(d) { return chart.radius * Math.sqrt(d.y) / 10; })
@@ -76,8 +86,11 @@ appController.prototype.buildChart = function(chartData) {
   // Total size of all segments; we set this later, after loading the data.
   chart.totalViewers = chartData.viewers;
 
+  // Keep track of current root
+  chart.root = chartData;
+
   // For efficiency, filter nodes to keep only those large enough to see.
-  var nodes = chart.partition.nodes(chartData)
+  var nodes = chart.partition.nodes(chart.root)
       .filter(function(d) {
           return (d.dx > 0.005); // 0.005 radians = 0.29 degrees
       });
@@ -100,7 +113,8 @@ appController.prototype.buildChart = function(chartData) {
   chart.path.enter()
       .append('svg:path')
       .on('mouseover', mouseover)
-      .on('click', click);
+      .on('click', click)
+      .each(stash);
 
   chart.path
     .attr('display', function(d) { return d.depth ? null : 'none'; })
@@ -152,7 +166,14 @@ appController.prototype.buildChart = function(chartData) {
   }
 
   function click(d) {
-    window.open(d.url);
+    if (d.type === 'stream') {
+      window.open(d.url);
+      return;
+    }
+
+    chart.path.transition()
+      .duration(1000)
+      .attrTween("d", arcTweenZoom(d));
   }
 
   // Given a node in a partition layout, return an array of all of its ancestor
@@ -165,6 +186,46 @@ appController.prototype.buildChart = function(chartData) {
       current = current.parent;
     }
     return path;
+  }
+
+  // Setup for switching data: stash the old values for transition.
+  function stash(d) {
+    d.x0 = d.x;
+    d.dx0 = d.dx;
+  }
+
+  // When switching data: interpolate the arcs in data space.
+  function arcTweenData(a, i) {
+    var oi = d3.interpolate({x: a.x0, dx: a.dx0}, a);
+    function tween(t) {
+      var b = oi(t);
+      a.x0 = b.x;
+      a.dx0 = b.dx;
+      return chart.arc(b);
+    }
+    if (i == 0) {
+     // If we are on the first arc, adjust the x domain to match the root node
+     // at the current zoom level. (We only need to do this once.)
+      var xd = d3.interpolate(x.domain(), [node.x, node.x + node.dx]);
+      return function(t) {
+        chart.x.domain(xd(t));
+        return tween(t);
+      };
+    } else {
+      return tween;
+    }
+  }
+
+  // When zooming: interpolate the scales.
+  function arcTweenZoom(d) {
+    var xd = d3.interpolate(chart.x.domain(), [d.x, d.x + d.dx]),
+        yd = d3.interpolate(chart.y.domain(), [d.y, 1]),
+        yr = d3.interpolate(chart.y.range(), [d.y ? 20 : 0, chart.radius]);
+    return function(d, i) {
+      return i
+          ? function(t) { return chart.arc(d); }
+          : function(t) { chart.x.domain(xd(t)); chart.y.domain(yd(t)).range(yr(t)); return chart.arc(d); };
+    };
   }
 
 };
