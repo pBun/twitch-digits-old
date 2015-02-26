@@ -198,7 +198,11 @@ appController.prototype.buildChart = function(chartData) {
 
   function click(d) {
     var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-    if (d.type === 'stream' && !mobileRegex.test(navigator.userAgent)) {
+    var isMobile = mobileRegex.test(navigator.userAgent);
+    if (d.type === 'stream') {
+      if (isMobile) {
+        return;
+      }
       window.open(d.url);
       return;
     }
