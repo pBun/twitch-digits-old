@@ -118,8 +118,8 @@ appController.prototype.buildChart = function(chartData) {
   chart.path.enter()
       .append('svg:path')
       .attr('class', function(d) { return d.type; })
-      .on('mouseover', mouseover)
-      .on('click', click)
+      .on('mouseover', mouseover.bind(this))
+      .on('click', click.bind(this))
       .each(stash);
 
   chart.path
@@ -178,8 +178,12 @@ appController.prototype.buildChart = function(chartData) {
     }
 
     chart.root = chart.root === d && d.parent ? d.parent : d;
-    chart.vis
-      .classed('zoomed', chart.root.type != 'root');
+    var zooming = chart.root.type != 'root';
+    clearTimeout(this.chart.zoomTimeout);
+    this.chart.zoomTimeout = setTimeout(function() {
+      chart.vis
+        .classed('zoomed', zooming);
+    }, zooming ? 0 : 800);
     chart.path.transition()
       .duration(1000)
       .attrTween("d", arcTweenZoom(chart.root));
