@@ -8,6 +8,9 @@ var service = function($q, Twitch) {
   this.streams;
   this.games;
 
+  this.defaultBoxImage =  '/assets/images/404_boxart-272x380.jpg';
+  this.defaultUserImage =  '/assets/images/404_user_300x300.png';
+
 };
 service.$inject = ['$q', 'Twitch'];
 
@@ -37,7 +40,7 @@ service.prototype.formatGame = function(game, streamLimit) {
     'name': game.game.name,
     'encodedName': encodeURIComponent(game.game.name),
     'url': 'http://twitch.tv/directory/game/' + encodeURIComponent(game.game.name),
-    'image': game.game.box.large,
+    'image': game.game.box.large || this.defaultBoxImage,
     'viewers': game.viewers,
     'children': []
   };
@@ -51,18 +54,19 @@ service.prototype.formatGame = function(game, streamLimit) {
       var s = {
         'type': 'stream',
         'name': stream.channel.name,
-        'image': stream.channel.logo,
+        'image': stream.channel.logo || this.defaultUserImage,
         'url': stream.channel.url,
         'viewers': stream.viewers
       };
       g.children.push(s);
       otherStreamViewers = otherStreamViewers - stream.viewers;
-    });
+    }.bind(this));
 
     // add other stream option
     var os = {
       'type': 'stream',
       'name': 'other streams',
+      'image': this.defaultUserImage,
       'url': g.url,
       'viewers': otherStreamViewers
     };
@@ -70,7 +74,7 @@ service.prototype.formatGame = function(game, streamLimit) {
 
     deferred.resolve(g);
 
-  });
+  }.bind(this));
 
   return deferred.promise;
 };
@@ -99,11 +103,13 @@ service.prototype.getGames = function(opts) {
             var g = {
               'type': 'game',
               'name': 'other games',
+              'image': this.defaultBoxImage,
               'url': 'http://twitch.tv/directory',
               'viewers': otherGamesViewers,
               'children': [{
                 'type': 'stream',
                 'name': 'other streams',
+                'image': this.defaultUserImage,
                 'url': 'http://twitch.tv/directory/all',
                 'viewers': otherGamesViewers
               }]
