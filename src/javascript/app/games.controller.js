@@ -11,10 +11,15 @@ appController.$inject = ['$scope', 'Games'];
 appController.prototype.init = function(el) {
 
   this.scope.gameData = {};
-  this.chart = this.scope.chart = {};
+  this.scope.chart = this.chart = {};
+  this.scope.refreshChartData = this.refreshChartData.bind(this);
 
   this.initChart(el);
+  this.refreshChartData();
 
+};
+
+appController.prototype.refreshChartData = function() {
   this._games.getGames({
     'gameLimit': 100,
     'streamLimit': 100
@@ -23,7 +28,11 @@ appController.prototype.init = function(el) {
     this.buildChart(gameData);
     this.chart.ready = true;
   }.bind(this));
+};
 
+appController.prototype.handleWindowResize = function(e) {
+  this.initChart();
+  this.buildChart(this.scope.gameData);
 };
 
 appController.prototype.initChart = function(el) {
@@ -60,10 +69,6 @@ appController.prototype.initChart = function(el) {
     .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x + d.dx))); })
     .innerRadius(function(d) { return Math.max(0, chart.y(d.y)); })
     .outerRadius(function(d) { return Math.max(0, chart.y(d.y + d.dy)); });
-      // .startAngle(function(d) { return d.x; })
-      // .endAngle(function(d) { return d.x + d.dx; })
-      // .innerRadius(function(d) { return chart.radius * Math.sqrt(d.y) / 10; })
-      // .outerRadius(function(d) { return chart.radius * Math.sqrt(d.y + d.dy) / 10; });
 
   // Bounding circle underneath the sunburst, to make it easier to detect
   // when the mouse leaves the parent g.
@@ -71,11 +76,6 @@ appController.prototype.initChart = function(el) {
       .attr('r', chart.radius)
       .style('opacity', 0);
 
-};
-
-appController.prototype.handleWindowResize = function(e) {
-  this.initChart();
-  this.buildChart(this.scope.gameData);
 };
 
 appController.prototype.buildChart = function(chartData) {
