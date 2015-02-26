@@ -1,6 +1,9 @@
 <div id="main">
   <div id="chart">
     <div id="explanation">
+      <div class="game-image image-wrapper">
+        <img data-ng-show="chart.current" data-ng-src="{{chart.current.image}}" alt="{{chart.current.name}}">
+      </div>
       <div class="stream-wrapper" data-ng-show="chart.current.type === 'stream'">
         <span id="percentage">{{ chart.current.viewers / chart.currentGame.viewers | percent : 1}}</span><br/>
         of all <span>{{chart.currentGame.name}}</span> viewers are currently watching {{chart.current.name}}
