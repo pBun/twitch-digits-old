@@ -14,6 +14,21 @@ body {
   font-family: sans-serif;
 }
 
+#chart, svg {
+  display: none;
+}
+.loader-walk {
+  display: block;
+}
+.ready {
+  #chart, svg {
+    display: block;
+  }
+  .loader-walk {
+    display: none;
+  }
+}
+
 .image-wrapper img {
   width: 100%;
   display: block;
@@ -31,17 +46,27 @@ body {
   }
 }
 
+#control-panel {
+  position: relative;
+  display: inline-block;
+  z-index: 99;
+}
+
 #chart {
   position: absolute;
   top: 0;
   right: 0
   bottom: 0;
   left: 0;
-  z-index: -1;
 }
 
 #chart path {
   stroke: #fff;
+}
+
+svg {
+  position: absolute;
+  z-index: 1;
 }
 
 path {
@@ -71,6 +96,7 @@ path {
   width: 140px;
   text-align: center;
   color: #666;
+  z-index: 9;
 }
 #percentage {
   font-size: 2.5em;
