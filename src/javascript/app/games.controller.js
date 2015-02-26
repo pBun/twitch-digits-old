@@ -161,7 +161,7 @@ appController.prototype.buildChart = function(chartData) {
 
     // Then highlight only those that are an ancestor of the current segment.
     var sequenceArray = getAncestors(d);
-    chart.vis
+    chart.visWrapper
       .classed('active', true)
       .selectAll('path')
         .classed('current', false)
@@ -180,7 +180,7 @@ appController.prototype.buildChart = function(chartData) {
     scope.$apply();
 
     // Transition each segment to full opacity and then reactivate it.
-    chart.vis
+    chart.visWrapper
       .classed('active', false)
       .selectAll('path')
         .classed('current', false);
@@ -196,7 +196,7 @@ appController.prototype.buildChart = function(chartData) {
     var zooming = chart.root.type != 'root';
     clearTimeout(this.chart.zoomTimeout);
     this.chart.zoomTimeout = setTimeout(function() {
-      chart.vis
+      chart.visWrapper
         .classed('zoomed', zooming);
     }, zooming ? 0 : 800);
     chart.path.transition()
