@@ -195,6 +195,8 @@ appController.prototype.buildChart = function(chartData) {
     chart.root = chart.root === d && d.parent ? d.parent : d;
     var zooming = chart.root.type != 'root';
     clearTimeout(this.chart.zoomTimeout);
+    chart.zoomed = zooming;
+    scope.$apply();
     this.chart.zoomTimeout = setTimeout(function() {
       chart.visWrapper
         .classed('zoomed', zooming);

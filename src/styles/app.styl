@@ -193,6 +193,19 @@ a {
   line-height: 1.25em;
 }
 
+.explanation .back-info {
+  color: #fff;
+  position: absolute;
+  bottom: 20%;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+.chart-zoomed .explanation .back-info {
+  opacity: 0.5;
+}
+
 /* # Chart
 ================================================== */
 
@@ -209,14 +222,14 @@ a {
   cursor: pointer;
 }
 
-.chart .active path {
+.chart.active path {
   opacity: 0.3;
 }
 
-.chart .active path.current {
+.chart.active path.current {
   opacity: 1;
 }
 
-.chart .zoomed path.game {
+.chart.zoomed path.game {
   opacity: 0;
 }

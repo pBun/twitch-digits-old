@@ -1,4 +1,4 @@
-<div class="chart-wrapper">
+<div class="chart-wrapper" data-ng-class="{'chart-zoomed': chart.zoomed}">
   <div class="explanation" style="background-image:url({{chart.current.image}});">
     <div class="info stream-wrapper" data-ng-show="chart.current.type === 'stream'">
       <p class="inner-info">
@@ -12,5 +12,6 @@
         of all viewers are currently watching <strong>{{chart.current.name}}</strong>
       </p>
     </div>
+    <span class="back-info">click to go back</span>
   </div>
 </div>
