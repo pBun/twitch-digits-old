@@ -52,18 +52,18 @@ appController.prototype.initChart = function(el) {
       .attr('transform', 'translate(' + chart.width / 2 + ',' + chart.height / 2 + ')');
 
   chart.partition = (chart.partition || d3.layout.partition())
-      .size([2 * Math.PI, 100])
+      // .size([2 * Math.PI, 100])
       .value(function(d) { return d.viewers; });
 
   chart.arc = (chart.arc || d3.svg.arc())
-    // .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x))); })
-    // .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x + d.dx))); })
-    // .innerRadius(function(d) { return Math.max(0, chart.y(d.y)); })
-    // .outerRadius(function(d) { return Math.max(0, chart.y(d.y + d.dy)); });
-      .startAngle(function(d) { return d.x; })
-      .endAngle(function(d) { return d.x + d.dx; })
-      .innerRadius(function(d) { return chart.radius * Math.sqrt(d.y) / 10; })
-      .outerRadius(function(d) { return chart.radius * Math.sqrt(d.y + d.dy) / 10; });
+    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x))); })
+    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x + d.dx))); })
+    .innerRadius(function(d) { return Math.max(0, chart.y(d.y)); })
+    .outerRadius(function(d) { return Math.max(0, chart.y(d.y + d.dy)); });
+      // .startAngle(function(d) { return d.x; })
+      // .endAngle(function(d) { return d.x + d.dx; })
+      // .innerRadius(function(d) { return chart.radius * Math.sqrt(d.y) / 10; })
+      // .outerRadius(function(d) { return chart.radius * Math.sqrt(d.y + d.dy) / 10; });
 
   // Bounding circle underneath the sunburst, to make it easier to detect
   // when the mouse leaves the parent g.
@@ -112,6 +112,7 @@ appController.prototype.buildChart = function(chartData) {
 
   chart.path.enter()
       .append('svg:path')
+      .attr('class', function(d) { return d.type; })
       .on('mouseover', mouseover)
       .on('click', click)
       .each(stash);
@@ -171,9 +172,12 @@ appController.prototype.buildChart = function(chartData) {
       return;
     }
 
+    chart.root = chart.root === d && d.parent ? d.parent : d;
+    chart.vis
+      .classed('zoomed', chart.root.type != 'root');
     chart.path.transition()
       .duration(1000)
-      .attrTween("d", arcTweenZoom(d));
+      .attrTween("d", arcTweenZoom(chart.root));
   }
 
   // Given a node in a partition layout, return an array of all of its ancestor
@@ -219,12 +223,12 @@ appController.prototype.buildChart = function(chartData) {
   // When zooming: interpolate the scales.
   function arcTweenZoom(d) {
     var xd = d3.interpolate(chart.x.domain(), [d.x, d.x + d.dx]),
-        yd = d3.interpolate(chart.y.domain(), [d.y, 1]),
-        yr = d3.interpolate(chart.y.range(), [d.y ? 20 : 0, chart.radius]);
+        yd = d3.interpolate(chart.y.domain(), [d.y, 1])
+        // yr = d3.interpolate(chart.y.range(), [d.y ? 20 : 0, chart.radius]);
     return function(d, i) {
       return i
           ? function(t) { return chart.arc(d); }
-          : function(t) { chart.x.domain(xd(t)); chart.y.domain(yd(t)).range(yr(t)); return chart.arc(d); };
+          : function(t) { chart.x.domain(xd(t)); chart.y.domain(yd(t)); return chart.arc(d); };
     };
   }
 
