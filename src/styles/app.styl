@@ -45,11 +45,30 @@ body {
     display: none;
   }
 }
-
+.controls-trigger {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+  z-index: 999;
+}
 #control-panel {
-  position: relative;
+  position: absolute;
   display: inline-block;
   z-index: 99;
+  left: 0;
+  top: 0;
+  padding: 50px 20px 20px;
+  border: 1px solid #eee;
+  background: #fff;
+  border-radius: 0 0 0.5em 0;
+  transform: translateX(-100%);
+  transition: transform 0.2s ease-in;
+  &.open {
+    transition-timing-function: ease-out;
+    transform: translateX(0);
+  }
+}
 }
 
 #chart {
@@ -70,7 +89,7 @@ svg {
 }
 
 path {
-  transition: opacity 0.2s ease-out;
+  transition: opacity 0.2s ease;
   cursor: pointer;
 }
 
@@ -97,6 +116,7 @@ path {
   text-align: center;
   color: #666;
   z-index: 9;
+  pointer-events: none;
 }
 #percentage {
   font-size: 2.5em;
