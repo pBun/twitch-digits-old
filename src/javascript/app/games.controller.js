@@ -16,8 +16,8 @@ appController.prototype.init = function(el) {
   this.initChart(el);
 
   this._games.getGames({
-    'gameLimit': 10,
-    'streamLimit': 10
+    'gameLimit': 100,
+    'streamLimit': 100
   }).then(function(gameData) {
     this.scope.gameData = gameData;
     this.buildChart(gameData);
