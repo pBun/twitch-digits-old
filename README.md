@@ -1,7 +1,7 @@
 twitch digits
 ============
 
-An [AngularJS](https://angularjs.org/) app to display the live [Twitch.tv](http://twitch.tv) viewer breakdown across games and streams with [d3.js](http://d3js.org). This project borrows heavily from [kerryrodden's zoomable sunburst example](http://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad).
+An [AngularJS](https://angularjs.org/) app that illustrates the breakdown of all live [twitch.tv](http://twitch.tv) stream viewers sorted by game. The chart utilizes [d3.js](http://d3js.org) and borrows heavily from [kerryrodden's zoomable sunburst example](http://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad).
 
 ## Local development
 
