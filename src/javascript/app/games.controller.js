@@ -130,9 +130,11 @@ appController.prototype.buildChart = function(chartData) {
 
   chart.path = chart.vis.data([chartData]).selectAll('path').data(nodes);
 
+  chart.path.exit()
+    .remove();
+
   chart.path.enter()
       .append('svg:path')
-      .attr('class', function(d) { return d.type; })
       .on('mouseover', mouseover.bind(this))
       .on('click', click.bind(this))
       .each(stash);
@@ -141,10 +143,8 @@ appController.prototype.buildChart = function(chartData) {
     .attr('display', function(d) { return d.depth ? null : 'none'; })
     .attr('d', chart.arc)
     .attr('fill-rule', 'evenodd')
+    .attr('class', function(d) { return d.type; })
     .style('fill', function(d) { return chart.colors(d.name); });
-
-  chart.path.exit()
-    .remove();
 
   // Add the mouseleave handler to the bounding circle.
   chart.vis.on('mouseleave', mouseleave);
