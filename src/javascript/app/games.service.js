@@ -114,6 +114,7 @@ service.prototype.getGames = function(opts) {
                 'viewers': otherGamesViewers
               }]
             };
+            this.games.children.push(g);
             deferred.resolve(this.games);
           }
         }.bind(this));
