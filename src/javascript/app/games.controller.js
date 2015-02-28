@@ -235,13 +235,12 @@ appController.prototype.clickHandler = function(d) {
   var isMobile = mobileRegex.test(navigator.userAgent);
   if (isMobile) {
 
-    if (d.type === 'stream') {
+    // double tap for desktop action
+    if ((d.type === 'stream' || d.type === 'game') && d !== chart.activeMobile) {
+      chart.activeMobile = d;
       return;
     }
 
-    if (d.type === 'game') {
-      return;
-    }
   }
 
   if (d.type === 'stream') {
