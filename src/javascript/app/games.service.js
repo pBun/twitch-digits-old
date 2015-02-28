@@ -138,33 +138,37 @@ service.prototype.getSnapshot = function(opts) {
   var streamOffset = 0;
   var streamLimit = opts.streamLimit;
 
+  var manualTallyGameViewers = !streamLimit;
+  var manualTallyRootViwers = manualTallyGameViewers && !gameLimit;
+
   var deferred = this._q.defer();
 
   this.root = new RootNode({ 'name': 'games' });
-
-  // get total number of viewers
-  if (gameLimit) {
-    this._twitch.get('streams/summary').then(function(data) {
-      this.root.viewers = data.viewers;
-    }.bind(this));
-  }
 
   // get games
   this.getGames(gameOffset + gameLimit, gameOffset).then(function(games) {
     this.root.children = games;
     var totalGames = games.length;
 
+    // get total number of viewers if we aren't manually tally'ing
+    if (!manualTallyRootViwers) {
+      this._twitch.get('streams/summary').then(function(data) {
+        this.root.viewers = data.viewers;
+      }.bind(this));
+    }
+
     // format each game and get live streams
     angular.forEach(games, function(game) {
       this.getGameStreams(game.getEncodedName(), streamOffset + streamLimit, streamOffset).then(function(streams) {
 
         // if loading all streams we don't have to rely on twitch's inaccurate numbers
-        if (!streamLimit) {
+        // and can manually tally the viewers for precise statistics
+        if (manualTallyGameViewers) {
           var streamViewers = this.sumViewers(streams);
           game.viewers = streamViewers;
-          if (!gameLimit) {
-            this.root.viewers += streamViewers;
-          }
+        }
+        if (manualTallyRootViwers) {
+          this.root.viewers += streamViewers;
         }
 
         game.children = streams;
