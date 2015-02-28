@@ -159,7 +159,7 @@ appController.prototype.buildChart = function(chartData) {
     .style('fill', function(d) { return chart.colors(d.name); });
 
   // Add the mouseleave handler to the bounding circle.
-  chart.vis.on('mouseleave', this.mouseleaveHandler);
+  chart.vis.on('mouseleave', this.mouseleaveHandler.bind(this));
 
   chart.viewers = chart.path.node().__data__.value;
 
