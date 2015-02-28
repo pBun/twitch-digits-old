@@ -81,13 +81,18 @@ a {
 /* # General layout
 ================================================== */
 
+$headerHeight = 15;
+$mainHeight = 80;
+$mobileHeaderHeight = 30;
+$mobileMainHeight = 60;
+
 .header {
-  height: 15%;
+  height: ($headerHeight)%;
 }
 
 .main-wrapper {
   position: relative;
-  height: 80%;
+  height: ($mainHeight)%;
   text-align: center;
 }
 .games {
@@ -96,25 +101,37 @@ a {
   min-height: 320px;
   min-width: 320px;
 }
-
+@media screen and (max-width: 600px) {
+  .header {
+    height: ($mobileHeaderHeight)%;
+    padding-top: 50px;
+    box-sizing: border-box;
+  }
+  .main-wrapper {
+    height: ($mobileMainHeight)%;
+  }
+}
 
 /* # Control panel
 ================================================== */
-
-.controls-trigger {
-  position: absolute;
-  margin-top: 10px;
-  top: -18.75%;
-  left: 10px;
-  cursor: pointer;
-  z-index: 999;
-}
+.controls-trigger,
 .control-panel {
   position: absolute;
+  top: -($headerHeight / $mainHeight * 100)%;
+  left: 0;
+  @media screen and (max-width: 600px) {
+    top: -($mobileHeaderHeight / $mobileMainHeight * 100)%;
+  }
+}
+.controls-trigger {
+  margin-left: 10px;
+  cursor: pointer;
+  z-index: 999;
+  margin-top: 10px;
+}
+.control-panel {
   display: inline-block;
   z-index: 99;
-  left: 0;
-  top: -18.75%;
   padding: 45px 0 10px 0;
   border: 1px solid #eee;
   border-width: 0 1px 1px 0;
@@ -168,8 +185,12 @@ a {
   margin-left: 10px;
 }
 
-/* # Author links
+/* # Credits
 ================================================== */
+
+.fork-me img {
+  max-width: 33%
+}
 
 .author {
   position: absolute;
