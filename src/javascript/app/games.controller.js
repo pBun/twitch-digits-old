@@ -13,6 +13,8 @@ appController.$inject = ['$scope', 'Games'];
 appController.prototype.init = function(el) {
 
   // Set scope variables
+  var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+  this.scope.isMobile = mobileRegex.test(navigator.userAgent);
   this.scope.gameData = {};
   this.scope.chart = this.chart = {};
 
@@ -231,9 +233,7 @@ appController.prototype.clickHandler = function(d) {
   var chart = this.chart;
   var scope = this.scope;
 
-  var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-  var isMobile = mobileRegex.test(navigator.userAgent);
-  if (isMobile) {
+  if (scope.isMobile) {
 
     // double tap for desktop action
     if ((d.type === 'stream' || d.type === 'game') && d !== chart.activeMobile) {
