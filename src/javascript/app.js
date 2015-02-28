@@ -1,5 +1,4 @@
 var angular = require('angular');
-var ngRoute = require('angular-route');
 var TwitchModule = require('./components/twitchApi/twitch');
 var CustomFilters = require('./components/customFilters/customFilters');
 var MainController = require('./app/main.controller');
