@@ -35,12 +35,13 @@ service.prototype.getGameStreams = function(encodedGameName, streamLimit) {
 
 service.prototype.formatGame = function(game, streamLimit) {
   var deferred = this._q.defer();
+  var gameArt = game.game.box ? game.game.box.large || this.defaultBoxImage : this.defaultBoxImage;
   var g = {
     'type': 'game',
     'name': game.game.name,
     'encodedName': encodeURIComponent(game.game.name),
     'url': 'http://twitch.tv/directory/game/' + encodeURIComponent(game.game.name),
-    'image': game.game.box.large || this.defaultBoxImage,
+    'image': gameArt,
     'viewers': game.viewers,
     'children': []
   };
