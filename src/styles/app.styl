@@ -115,7 +115,7 @@ a {
   z-index: 99;
   left: 0;
   top: -18.75%;
-  padding: 45px 20px 10px 10px;
+  padding: 45px 0 10px 0;
   border: 1px solid #eee;
   border-width: 0 1px 1px 0;
   background: #fefefe;
@@ -123,13 +123,49 @@ a {
   transform: translateX(-100%);
   transition: transform 0.2s ease-in;
   text-align: left;
+  max-width: 100%;
+  width: 265px;
   &.open {
     transition-timing-function: ease-out;
     transform: translateX(0);
   }
 }
+.control-panel .field {
+  vertical-align: bottom;
+  margin-right: 20px;
+  margin-left: 10px;
+  box-sizing: border-box;
+  margin-bottom: 1.5rem;
+}
+.control-panel .field input {
+  width: 75px;
+  margin: 0;
+}
 .control-panel .button-wrapper {
   text-align: center;
+  & button {
+    margin-top: 1rem;
+  }
+}
+.control-panel .percent {
+  display: inline-block;
+  position: relative;
+  input {
+    padding-right: 30px;
+  }
+  &:after {
+    content: '%';
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+.control-panel .error {
+  color: #ff0033;
+  margin-right: 20px;
+  margin-left: 10px;
 }
 
 /* # Author links
