@@ -143,7 +143,7 @@ service.prototype.getSnapshot = function(opts) {
   this.root = new RootNode({ 'name': 'games' });
 
   // get total number of viewers
-  if (!gameLimit) {
+  if (gameLimit) {
     this._twitch.get('streams/summary').then(function(data) {
       this.root.viewers = data.viewers;
     }.bind(this));
