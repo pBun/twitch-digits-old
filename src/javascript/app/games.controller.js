@@ -257,29 +257,6 @@ appController.prototype.getAncestors = function(node) {
   return path;
 }
 
-// When switching data: interpolate the arcs in data space.
-appController.prototype.arcTweenData = function(a, i) {
-  var chart = this.chart;
-  var oi = d3.interpolate({x: a.x0, dx: a.dx0}, a);
-  function tween(t) {
-    var b = oi(t);
-    a.x0 = b.x;
-    a.dx0 = b.dx;
-    return chart.arc(b);
-  }
-  if (i == 0) {
-   // If we are on the first arc, adjust the x domain to match the root node
-   // at the current zoom level. (We only need to do this once.)
-    var xd = d3.interpolate(chart.x.domain(), [chart.root.x, chart.root.x + chart.root.dx]);
-    return function(t) {
-      chart.x.domain(xd(t));
-      return tween(t);
-    };
-  } else {
-    return tween;
-  }
-}
-
 // When zooming: interpolate the scales.
 appController.prototype.arcTweenZoom = function(d) {
   var chart = this.chart;
