@@ -114,13 +114,13 @@ appController.prototype.buildChart = function(chartData) {
           if (d.type === 'root') return true;
 
           // hide anything below 0.01% by default
-          var efficiency = (scope.efficiency || 0.01) / 100;
+          var efficiency = (typeof scope.efficiency === 'number' ? scope.efficiency : 0.01) / 100;
 
           if (d.type === 'stream') {
-            return d.viewers / d.parent.viewers > efficiency && d.parent.viewers / chart.totalViewers > efficiency;
+            return d.viewers / d.parent.viewers > efficiency && d.parent.viewers / chartData.viewers > efficiency;
           }
 
-          return d.viewers / chart.totalViewers > efficiency;
+          return d.viewers / chartData.viewers > efficiency;
       });
 
   var uniqueNames = (function(a) {
