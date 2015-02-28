@@ -163,11 +163,15 @@ appController.prototype.buildChart = function(chartData) {
 
 };
 
-// Fade all but the current sequence
-appController.prototype.mouseoverHandler = function(d) {
-
+appController.prototype.setCurrentNode = function(d) {
   var chart = this.chart;
   var scope = this.scope;
+
+  // remove node instead of attempting to set to undefined
+  if (!d) {
+    this.removeCurrentNode();
+    return;
+  }
 
   // Update current chart data
   scope.chart.current = d;
@@ -187,11 +191,9 @@ appController.prototype.mouseoverHandler = function(d) {
         return isActive;
       })
       .classed('current', true);
-}
+};
 
-// Restore everything to full opacity when moving off the visualization.
-appController.prototype.mouseleaveHandler = function(d) {
-
+appController.prototype.removeCurrentNode = function() {
   var chart = this.chart;
   var scope = this.scope;
 
@@ -212,6 +214,16 @@ appController.prototype.mouseleaveHandler = function(d) {
     .classed('active', false)
     .selectAll('path')
       .classed('current', false);
+};
+
+// Fade all but the current sequence
+appController.prototype.mouseoverHandler = function(d) {
+  this.setCurrentNode(d);
+}
+
+// Restore everything to full opacity when moving off the visualization.
+appController.prototype.mouseleaveHandler = function(d) {
+  this.removeCurrentNode();
 }
 
 appController.prototype.clickHandler = function(d) {
@@ -221,10 +233,18 @@ appController.prototype.clickHandler = function(d) {
 
   var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
   var isMobile = mobileRegex.test(navigator.userAgent);
-  if (d.type === 'stream') {
-    if (isMobile) {
+  if (isMobile) {
+
+    if (d.type === 'stream') {
       return;
     }
+
+    if (d.type === 'game') {
+      return;
+    }
+  }
+
+  if (d.type === 'stream') {
     window.open(d.url);
     return;
   }
