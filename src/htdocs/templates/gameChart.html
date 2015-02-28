@@ -2,13 +2,13 @@
   <div class="explanation" style="{{chart.current.image|bgImage}}">
     <div class="info stream-wrapper" data-ng-show="chart.current.type === 'stream'">
       <p class="inner-info">
-        <span class="percentage">{{ chart.current.viewers / chart.currentGame.viewers | percent : 1}}</span><br/>
+        <span class="percentage">{{ chart.current.viewers / chart.currentGame.viewers | percent : 2}}</span><br/>
         of all <strong>{{chart.currentGame.name}}</strong> viewers are currently watching <strong>{{chart.current.name}}</strong>
       </p>
     </div>
     <div class="info game-wrapper" data-ng-show="chart.current.type === 'game'">
       <p class="inner-info">
-        <span class="percentage">{{ chart.current.viewers / gameData.viewers | percent : 1}}</span><br/>
+        <span class="percentage">{{ chart.current.viewers / gameData.viewers | percent : 2}}</span><br/>
         of all viewers are currently watching <strong>{{chart.current.name}}</strong>
       </p>
     </div>

@@ -1,5 +1,64 @@
 var angular = require('angular');
 
+// Node object def
+var Node = function(opts) {
+  opts = opts || {};
+  this.name = opts.name || '';
+  this.viewers = opts.viewers || 0;
+};
+Node.TYPES = {
+  ROOT: 'root',
+  STREAM: 'stream',
+  GAME: 'game'
+};
+Node.prototype.getEncodedName = function() {
+  return encodeURIComponent(this.name);
+};
+
+// Game node object def
+function RootNode(opts){
+  Node.call(this, opts);
+
+  this.type = Node.TYPES.ROOT;
+  this.children = [];
+}
+RootNode.prototype = Object.create(Node.prototype);
+RootNode.prototype.constructor = RootNode;
+
+// Game node object def
+function GameNode(rawTwitchData){
+  Node.call(this);
+
+  this.type = Node.TYPES.GAME;
+  this.name = rawTwitchData.game.name;
+  this.viewers = rawTwitchData.viewers;
+  this.image = rawTwitchData.game.box && rawTwitchData.game.box.large ?
+                rawTwitchData.game.box.large : GameNode.DEFAULT_IMAGE;
+  this.children = [];
+  this.url = GameNode.GAME_URL_PREF + this.getEncodedName();
+
+}
+GameNode.prototype = Object.create(Node.prototype);
+GameNode.prototype.constructor = GameNode;
+GameNode.URL_PREF = 'http://twitch.tv/directory/game/';
+GameNode.DEFAULT_IMAGE = '/assets/images/404_boxart-272x380.jpg';
+
+// Stream node object def
+function StreamNode(rawTwitchData){
+  Node.call(this);
+
+  this.type = Node.TYPES.STREAM;
+  this.name = rawTwitchData.channel.name;
+  this.viewers = rawTwitchData.viewers;
+  this.image = rawTwitchData.channel.logo || StreamNode.DEFAULT_IMAGE;
+  this.url = rawTwitchData.channel.url;
+}
+StreamNode.prototype = Object.create(Node.prototype);
+StreamNode.prototype.constructor = StreamNode;
+StreamNode.DEFAULT_IMAGE = '/assets/images/404_user_300x300.png';
+
+
+
 var service = function($q, Twitch) {
 
   this._twitch = Twitch;
@@ -8,120 +67,96 @@ var service = function($q, Twitch) {
   this.streams;
   this.games;
 
-  this.defaultBoxImage =  '/assets/images/404_boxart-272x380.jpg';
-  this.defaultUserImage =  '/assets/images/404_user_300x300.png';
-
 };
 service.$inject = ['$q', 'Twitch'];
 
-service.prototype.getStreamSummary = function() {
-  var deferred = this._q.defer();
-  this._twitch.get('streams/summary').then(function(data) {
-    this.streams = {};
-    this.streams.viewers = data.viewers;
-    this.streams.channels = data.channels;
-    deferred.resolve(this.streams);
-  }.bind(this));
-  return deferred.promise;
+service.prototype.sumViewers = function (items) {
+  if (items == null) {
+    return 0;
+  }
+  return items.reduce(function (a, b) {
+    return b['viewers'] == null ? a : a + b['viewers'];
+  }, 0);
 };
 
-service.prototype.getGameStreams = function(encodedGameName, streamLimit) {
+service.prototype.getGames = function(offsetEnd, offsetStart) {
   var deferred = this._q.defer();
-  this._twitch.get('streams?limit=' + streamLimit + '&game=' + encodedGameName).then(function(data) {
-    deferred.resolve(data.streams);
-  });
-  return deferred.promise;
-};
+  offsetStart = offsetStart || 0;
+  var gameLimit = offsetEnd ? Math.min(offsetEnd - offsetStart, 100) : 100;
+  this._twitch.get('games/top?limit=' + gameLimit + '&offset=' + offsetStart).then(function(data) {
+    var games = [];
+    angular.forEach(data.top, function(game) {
+      var gameNode = new GameNode(game);
+      if (!gameNode.name) return;
+      games.push(gameNode);
+    });
 
-service.prototype.formatGame = function(game, streamLimit) {
-  var deferred = this._q.defer();
-  var gameArt = game.game.box ? game.game.box.large || this.defaultBoxImage : this.defaultBoxImage;
-  var g = {
-    'type': 'game',
-    'name': game.game.name,
-    'encodedName': encodeURIComponent(game.game.name),
-    'url': 'http://twitch.tv/directory/game/' + encodeURIComponent(game.game.name),
-    'image': gameArt,
-    'viewers': game.viewers,
-    'children': []
-  };
-
-  var gameViewers = game.viewers;
-  var otherStreamViewers = gameViewers;
-  this.getGameStreams(g.encodedName, streamLimit).then(function(streams) {
-
-    // add each of the streams to our game object
-    angular.forEach(streams, function(stream, i) {
-      var s = {
-        'type': 'stream',
-        'name': stream.channel.name,
-        'image': stream.channel.logo || this.defaultUserImage,
-        'url': stream.channel.url,
-        'viewers': stream.viewers
-      };
-      g.children.push(s);
-      otherStreamViewers = otherStreamViewers - stream.viewers;
-    }.bind(this));
-
-    // add other stream option
-    var os = {
-      'type': 'stream',
-      'name': 'other streams',
-      'image': this.defaultUserImage,
-      'url': g.url,
-      'viewers': otherStreamViewers
-    };
-    g.children.push(os);
-
-    deferred.resolve(g);
+    var nextOffsetStart = offsetStart + gameLimit;
+    if (data._total > nextOffsetStart && (!offsetEnd || nextOffsetStart < offsetEnd)) {
+      this.getGames(offsetEnd, nextOffsetStart).then(function(nextReqGames) {
+        games = games.concat(nextReqGames);
+        deferred.resolve(games);
+      });
+    } else {
+      deferred.resolve(games);
+    }
 
   }.bind(this));
 
   return deferred.promise;
 };
 
-service.prototype.getGames = function(opts) {
+service.prototype.getGameStreams = function(encodedGameName, offsetEnd, offsetStart) {
   var deferred = this._q.defer();
+  offsetStart = offsetStart || 0;
+  var streamLimit = offsetEnd ? Math.min(offsetEnd - offsetStart, 100) : 100;
+  this._twitch.get('streams?limit=' + streamLimit + '&offset=' + offsetStart + '&game=' + encodedGameName).then(function(data) {
+    var streams = [];
+    angular.forEach(data.streams, function(stream) {
+      var streamNode = new StreamNode(stream);
+      streams.push(streamNode);
+    });
+
+    var nextReqOffsetStart = offsetStart + streamLimit;
+    if (data._total > nextReqOffsetStart && (!offsetEnd || nextReqOffsetStart < offsetEnd)) {
+      this.getGameStreams(encodedGameName, offsetEnd, nextReqOffsetStart).then(function(nextReqStreams) {
+        streams = streams.concat(nextReqStreams);
+        deferred.resolve(streams);
+      });
+    } else {
+      deferred.resolve(streams);
+    }
+
+  }.bind(this));
+  return deferred.promise;
+};
+
+service.prototype.getSnapshot = function(opts) {
   opts = opts || {};
-  opts.gameLimit = opts.gameLimit || 10;
-  opts.streamLimit = opts.streamLimit || 5;
-  this.games = {
-    'type': 'root',
-    'name': 'games',
-    'children': []
-  };
-  this.getStreamSummary().then(function(streamSummary) {
-    var totalViewers = streamSummary.viewers;
-    var otherGamesViewers = totalViewers;
-    this.games.viewers = totalViewers;
-    this._twitch.get('games/top?limit=' + opts.gameLimit).then(function(data) {
-      var gamesToFormat = data.top.length;
-      angular.forEach(data.top, function(game, i) {
-        otherGamesViewers = otherGamesViewers - game.viewers;
-        this.formatGame(game, opts.streamLimit).then(function(formattedGame) {
-          this.games.children.push(formattedGame);
-          if (!--gamesToFormat) {
-            var g = {
-              'type': 'game',
-              'name': 'other games',
-              'image': this.defaultBoxImage,
-              'url': 'http://twitch.tv/directory',
-              'viewers': otherGamesViewers,
-              'children': [{
-                'type': 'stream',
-                'name': 'other streams',
-                'image': this.defaultUserImage,
-                'url': 'http://twitch.tv/directory/all',
-                'viewers': otherGamesViewers
-              }]
-            };
-            this.games.children.push(g);
-            deferred.resolve(this.games);
-          }
-        }.bind(this));
+  var gameOffset = opts.gameOffset || 0;
+  var gameLimit = opts.gameLimit;
+  var streamOffset = 0;
+  var streamLimit = opts.streamLimit;
+
+  var deferred = this._q.defer();
+
+  this.root = new RootNode({ 'name': 'games' });
+  this.getGames(gameOffset + gameLimit, gameOffset).then(function(games) {
+    this.root.children = games;
+    var totalGames = games.length;
+    angular.forEach(games, function(game) {
+      this.getGameStreams(game.getEncodedName(), streamOffset + streamLimit, streamOffset).then(function(streams) {
+        var streamViewers = this.sumViewers(streams);
+        game.viewers = streamViewers;
+        this.root.viewers += streamViewers;
+        game.children = streams;
+        if (--totalGames <= 0) {
+          deferred.resolve(this.root);
+        }
       }.bind(this));
     }.bind(this));
   }.bind(this));
+
   return deferred.promise;
 };
 

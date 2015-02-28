@@ -10,7 +10,9 @@ var appDirective = function($window) {
         refresh: '=?',
         ready: '=?',
         gameLimit: '=?',
-        streamLimit: '=?'
+        gameOffset: '=?',
+        streamLimit: '=?',
+        efficiency: '=?'
     },
     controller: GamesController,
     link: function(scope, element, attrs, ctrl) {

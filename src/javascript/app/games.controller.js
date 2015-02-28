@@ -30,9 +30,10 @@ appController.prototype.init = function(el) {
 
 appController.prototype.refreshChartData = function() {
   this.scope.ready = false;
-  this._games.getGames({
-    'gameLimit': this.scope.gameLimit || 100,
-    'streamLimit': this.scope.streamLimit || 100
+  this._games.getSnapshot({
+    'gameOffset': this.scope.gameOffset,
+    'gameLimit': this.scope.gameLimit,
+    'streamLimit': this.scope.streamLimit
   }).then(function(gameData) {
     this.scope.gameData = gameData;
     this.buildChart(gameData);
@@ -112,7 +113,7 @@ appController.prototype.buildChart = function(chartData) {
   var nodes = chart.partition.nodes(chart.root)
       .filter(function(d) {
           // hide anything below 0.01% or 0.0002 radians
-          return (d.dx > ((chart.efficiencyLimit || 0.01) / 100) * 2);
+          return (d.dx > ((scope.efficiency || 0.01) / 100) * 2);
       });
 
   var uniqueNames = (function(a) {
