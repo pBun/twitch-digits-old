@@ -141,20 +141,35 @@ service.prototype.getSnapshot = function(opts) {
   var deferred = this._q.defer();
 
   this.root = new RootNode({ 'name': 'games' });
+
+  // get total number of viewers
+  this._twitch.get('streams/summary').then(function(data) {
+    this.root.viewers = data.viewers;
+  }.bind(this));
+
+  // get games
   this.getGames(gameOffset + gameLimit, gameOffset).then(function(games) {
     this.root.children = games;
     var totalGames = games.length;
+
+    // format each game and get live streams
     angular.forEach(games, function(game) {
       this.getGameStreams(game.getEncodedName(), streamOffset + streamLimit, streamOffset).then(function(streams) {
-        var streamViewers = this.sumViewers(streams);
-        game.viewers = streamViewers;
-        this.root.viewers += streamViewers;
+
+        // if loading all streams we don't have to rely on twitch's inaccurate numbers
+        if (!streamLimit) {
+          var streamViewers = this.sumViewers(streams);
+          game.viewers = streamViewers;
+          this.root.viewers += streamViewers;
+        }
+
         game.children = streams;
         if (--totalGames <= 0) {
           deferred.resolve(this.root);
         }
       }.bind(this));
     }.bind(this));
+
   }.bind(this));
 
   return deferred.promise;

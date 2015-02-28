@@ -103,17 +103,24 @@ appController.prototype.buildChart = function(chartData) {
   var chart = this.chart;
   var scope = this.scope;
 
-  // Total size of all segments; we set this later, after loading the data.
-  chart.totalViewers = chartData.viewers;
-
   // Keep track of current root
   chart.root = chartData;
+
+  chart.totalViewers = chartData.viewers;
 
   // For efficiency, filter nodes to keep only those large enough to see.
   var nodes = chart.partition.nodes(chart.root)
       .filter(function(d) {
-          // hide anything below 0.01% or 0.0002 radians
-          return (d.dx > ((scope.efficiency || 0.01) / 100) * 2);
+          if (d.type === 'root') return true;
+
+          // hide anything below 0.01% by default
+          var efficiency = (scope.efficiency || 0.01) / 100;
+
+          if (d.type === 'stream') {
+            return d.viewers / d.parent.viewers > efficiency && d.parent.viewers / chart.totalViewers > efficiency;
+          }
+
+          return d.viewers / chart.totalViewers > efficiency;
       });
 
   var uniqueNames = (function(a) {
