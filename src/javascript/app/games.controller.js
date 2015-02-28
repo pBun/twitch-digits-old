@@ -142,14 +142,14 @@ appController.prototype.buildChart = function(chartData) {
     .remove();
 
   chart.path.enter()
-      .append('svg:path')
-      .on('mouseover', this.mouseoverHandler.bind(this))
-      .on('click', this.clickHandler.bind(this))
-      .each(function(d) {
-        // Setup for switching data: stash the old values for transition.
-        d.x0 = d.x;
-        d.dx0 = d.dx;
-      });
+    .append('svg:path')
+    .on('mouseover', this.mouseoverHandler.bind(this))
+    .on('click', this.clickHandler.bind(this))
+    .each(function(d) {
+      // Setup for switching data: stash the old values for transition.
+      d.x0 = d.x;
+      d.dx0 = d.dx;
+    });
 
   chart.path
     .attr('display', function(d) { return d.depth ? null : 'none'; })
