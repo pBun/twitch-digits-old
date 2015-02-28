@@ -82,7 +82,7 @@ appController.prototype.initChart = function(el) {
 
   chart.partition = (chart.partition || d3.layout.partition())
       // .size([2 * Math.PI, 100])
-      .value(function(d) { return d.viewers; });
+      .value(function(d) { return d.renderedViewers || d.viewers; });
 
   chart.arc = (chart.arc || d3.svg.arc())
     .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x))); })
@@ -160,8 +160,6 @@ appController.prototype.buildChart = function(chartData) {
 
   // Add the mouseleave handler to the bounding circle.
   chart.vis.on('mouseleave', this.mouseleaveHandler.bind(this));
-
-  // chart.viewers = chart.path.node().__data__.value;
 
 };
 

@@ -139,11 +139,12 @@ service.prototype.getSnapshot = function(opts) {
   var streamLimit = opts.streamLimit;
 
   var manualTallyGameViewers = !streamLimit;
-  var manualTallyRootViwers = manualTallyGameViewers && !gameLimit;
+  var manualTallyRootViewers = manualTallyGameViewers && !gameLimit;
 
   var deferred = this._q.defer();
 
   this.root = new RootNode({ 'name': 'games' });
+  this.root.renderedViewers = 0;
 
   // get games
   this.getGames(gameOffset + gameLimit, gameOffset).then(function(games) {
@@ -151,7 +152,7 @@ service.prototype.getSnapshot = function(opts) {
     var totalGames = games.length;
 
     // get total number of viewers if we aren't manually tally'ing
-    if (!manualTallyRootViwers) {
+    if (!manualTallyRootViewers) {
       this._twitch.get('streams/summary').then(function(data) {
         this.root.viewers = data.viewers;
       }.bind(this));
@@ -161,13 +162,15 @@ service.prototype.getSnapshot = function(opts) {
     angular.forEach(games, function(game) {
       this.getGameStreams(game.getEncodedName(), streamOffset + streamLimit, streamOffset).then(function(streams) {
 
-        // if loading all streams we don't have to rely on twitch's inaccurate numbers
-        // and can manually tally the viewers for precise statistics
+        var streamViewers = this.sumViewers(streams);
+        game.renderedViewers = streamViewers;
+        this.root.renderedViewers += streamViewers;
+
+        // override twitch viewer totals to prevent async racing conditions
         if (manualTallyGameViewers) {
-          var streamViewers = this.sumViewers(streams);
           game.viewers = streamViewers;
         }
-        if (manualTallyRootViwers) {
+        if (manualTallyRootViewers) {
           this.root.viewers += streamViewers;
         }
 
