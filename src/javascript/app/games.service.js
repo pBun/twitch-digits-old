@@ -160,7 +160,9 @@ service.prototype.getSnapshot = function(opts) {
         if (!streamLimit) {
           var streamViewers = this.sumViewers(streams);
           game.viewers = streamViewers;
-          this.root.viewers += streamViewers;
+          if (!gameLimit) {
+            this.root.viewers += streamViewers;
+          }
         }
 
         game.children = streams;
