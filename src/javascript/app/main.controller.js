@@ -10,6 +10,7 @@ var appController = function($scope) {
   this.scope.chart.streamLimit = 0;
   this.scope.chart.efficiency = 0.1;
   this.scope.chart.refresh = false;
+  this.scope.chart.error = '';
   this.scope.chart.ready;
   this.scope.calcRequests = this.calcRequests.bind(this);
 

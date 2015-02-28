@@ -31,6 +31,7 @@ appController.prototype.init = function(el) {
 };
 
 appController.prototype.refreshChartData = function() {
+  this.scope.error = '';
   this.scope.ready = false;
   this._games.getSnapshot({
     'gameOffset': this.scope.gameOffset,
@@ -40,9 +41,8 @@ appController.prototype.refreshChartData = function() {
     this.scope.gameData = gameData;
     this.buildChart(gameData);
     this.scope.ready = true;
-  }.bind(this),
-  function(error) {
-    console.log('ERROR: ' + error);
+  }.bind(this), function(error) {
+    this.scope.error = error;
     this.scope.ready = true;
   }.bind(this));
 };

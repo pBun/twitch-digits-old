@@ -24,7 +24,23 @@ service.prototype.get = function(request) {
   var url = this.domain + request + '?callback=JSON_CALLBACK';
   url = this.fixQueryString(url);
   this._http.jsonp(url)
-    .success(deferred.resolve)
+    .success(function(data) {
+      if (data.error) {
+        var errorMsg = '';
+        if (data.status) {
+          errorMsg += data.status + ' ';
+        }
+        if (data.error) {
+          errorMsg += data.error + ': ';
+        }
+        if (data.message) {
+          errorMsg += data.message + ' ';
+        }
+        errorMsg += '(' + url + ')';
+        deferred.reject(errorMsg);
+      }
+      deferred.resolve(data);
+    })
     .error(deferred.reject);
 
   return deferred.promise;

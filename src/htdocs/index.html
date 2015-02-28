@@ -19,7 +19,7 @@
         <p>a breakdown of live twitch.tv viewers</p>
       </div>
     </header>
-    <main class="main-wrapper" data-ng-controller="MainController" data-ng-class="{ready: chart.ready}">
+    <main class="main-wrapper" data-ng-controller="MainController" data-ng-class="{'chart-ready': chart.ready, 'chart-error': chart.error}">
       <a class="controls-trigger"
         data-ng-bind="(!showControls ? 'open' : 'close') + ' controls'"
         data-ng-click="showControls = !showControls"></a>
@@ -56,10 +56,14 @@
         data-stream-limit="chart.streamLimit"
         data-efficiency="chart.efficiency"
         data-refresh="chart.refresh"
+        data-error="chart.error"
         data-ready="chart.ready">
       </div>
       <div class="loader-walk">
         <div></div><div></div><div></div><div></div><div></div>
+      </div>
+      <div class="chart-errors error container">
+        <p class="api-error" data-ng-bind="chart.error"></p
       </div>
     </main>
     <span class="author">

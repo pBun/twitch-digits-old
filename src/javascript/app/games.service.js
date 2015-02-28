@@ -101,7 +101,7 @@ service.prototype.getGames = function(offsetEnd, offsetStart) {
       deferred.resolve(games);
     }
 
-  }.bind(this));
+  }.bind(this), deferred.reject);
 
   return deferred.promise;
 };
@@ -127,7 +127,7 @@ service.prototype.getGameStreams = function(encodedGameName, offsetEnd, offsetSt
       deferred.resolve(streams);
     }
 
-  }.bind(this));
+  }.bind(this), deferred.reject);
   return deferred.promise;
 };
 
@@ -155,7 +155,7 @@ service.prototype.getSnapshot = function(opts) {
     if (!manualTallyRootViewers) {
       this._twitch.get('streams/summary').then(function(data) {
         this.root.viewers = data.viewers;
-      }.bind(this));
+      }.bind(this), deferred.reject);
     }
 
     // format each game and get live streams
@@ -178,10 +178,10 @@ service.prototype.getSnapshot = function(opts) {
         if (--totalGames <= 0) {
           deferred.resolve(this.root);
         }
-      }.bind(this));
+      }.bind(this), deferred.reject);
     }.bind(this));
 
-  }.bind(this));
+  }.bind(this), deferred.reject);
 
   return deferred.promise;
 };
