@@ -138,6 +138,7 @@ service.prototype.getSnapshot = function(opts) {
   var streamOffset = 0;
   var streamLimit = opts.streamLimit;
 
+  // if no limits, only use our stream totals for precise stats
   var manualTallyGameViewers = !streamLimit;
   var manualTallyRootViewers = manualTallyGameViewers && !gameLimit;
 
@@ -164,12 +165,9 @@ service.prototype.getSnapshot = function(opts) {
 
         var streamViewers = this.sumViewers(streams);
         game.renderedViewers = streamViewers;
+        game.viewers = manualTallyGameViewers ? streamViewers : Math.max(game.viewers, streamViewers);
         this.root.renderedViewers += streamViewers;
 
-        // override twitch viewer totals to prevent async racing conditions
-        if (manualTallyGameViewers) {
-          game.viewers = streamViewers;
-        }
         if (manualTallyRootViewers) {
           this.root.viewers += streamViewers;
         }
