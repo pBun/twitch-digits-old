@@ -186,9 +186,9 @@ appController.prototype.setCurrentNode = function(d) {
     .classed('active', true)
     .selectAll('path')
       .classed('current', false)
-      .filter(function(d) {
-        var isDirectlyActive = sequenceArray.indexOf(d) >= 0;
-        var isChildOfActive = sequenceArray.indexOf(d.parent) >= 0;
+      .filter(function(node) {
+        var isDirectlyActive = sequenceArray.indexOf(node) >= 0;
+        var isChildOfActive = sequenceArray.indexOf(node.parent) >= 0;
         var isActive = d.type === 'stream' ? isDirectlyActive : (isDirectlyActive || isChildOfActive);
         return isActive;
       })
