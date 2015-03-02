@@ -41,8 +41,6 @@ service.prototype.get = function(request, options) {
 
   var queryString = this.buildQueryString(options);
 
-  console.log(queryString);
-
   // build final url
   var url = this.domain + request + queryString;
 
