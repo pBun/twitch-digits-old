@@ -15,9 +15,10 @@ service.$inject = ['$http', '$q'];
 
 service.prototype.buildQueryString = function(options) {
   options = options || {};
-  var queryStringComponents = [];
-  angular.forEach(options, function(optVal, optName) {
-    queryStringComponents.push(optName + '=' + optVal);
+  var queryStringComponents = Object.keys(options).map(function(name) {
+    if (options[name]) {
+      return name + '=' + options[name];
+    }
   });
   return '?' + queryStringComponents.join('&');
 };
@@ -38,6 +39,12 @@ service.prototype.get = function(request, options) {
     'callback': 'JSON_CALLBACK'
   };
   options = angular.extend({}, (options || {}), defaultOptions);
+
+  // work-around for twitch.tv api streams req not supporting client_id
+  // https://github.com/justintv/Twitch-API/issues/334
+  if (request === 'streams') {
+    options['client_id'] = null;
+  }
 
   var queryString = this.buildQueryString(options);
 
