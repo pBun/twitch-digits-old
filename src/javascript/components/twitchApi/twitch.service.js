@@ -34,7 +34,7 @@ service.prototype.fixQueryString = function(url) {
 service.prototype.get = function(request, options) {
   var deferred = this._q.defer();
   var defaultOptions = {
-    // 'client_id': this._twitchAppID,
+    'client_id': this._twitchAppID,
     'callback': 'JSON_CALLBACK'
   };
   options = angular.extend({}, (options || {}), defaultOptions);
