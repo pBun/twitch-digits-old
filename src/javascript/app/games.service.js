@@ -46,7 +46,7 @@ service.prototype.getGames = function(offsetEnd, offsetStart) {
       deferred.resolve(games);
     }
 
-  }.bind(this));
+  }.bind(this), deferred.reject);
 
   return deferred.promise;
 };
@@ -72,7 +72,7 @@ service.prototype.getGameStreams = function(encodedGameName, offsetEnd, offsetSt
       deferred.resolve(streams);
     }
 
-  }.bind(this));
+  }.bind(this), deferred.reject);
   return deferred.promise;
 };
 
@@ -83,12 +83,14 @@ service.prototype.getSnapshot = function(opts) {
   var streamOffset = 0;
   var streamLimit = opts.streamLimit;
 
+  // if no limits, only use our stream totals for precise stats
   var manualTallyGameViewers = !streamLimit;
-  var manualTallyRootViwers = manualTallyGameViewers && !gameLimit;
+  var manualTallyRootViewers = manualTallyGameViewers && !gameLimit;
 
   var deferred = this._q.defer();
 
   this.root = new RootNode({ 'name': 'games' });
+  this.root.renderedViewers = 0;
 
   // get games
   this.getGames(gameOffset + gameLimit, gameOffset).then(function(games) {
@@ -96,23 +98,22 @@ service.prototype.getSnapshot = function(opts) {
     var totalGames = games.length;
 
     // get total number of viewers if we aren't manually tally'ing
-    if (!manualTallyRootViwers) {
+    if (!manualTallyRootViewers) {
       this._twitch.get('streams/summary').then(function(data) {
         this.root.viewers = data.viewers;
-      }.bind(this));
+      }.bind(this), deferred.reject);
     }
 
     // format each game and get live streams
     angular.forEach(games, function(game) {
       this.getGameStreams(game.getEncodedName(), streamOffset + streamLimit, streamOffset).then(function(streams) {
 
-        // if loading all streams we don't have to rely on twitch's inaccurate numbers
-        // and can manually tally the viewers for precise statistics
-        if (manualTallyGameViewers) {
-          var streamViewers = this.sumViewers(streams);
-          game.viewers = streamViewers;
-        }
-        if (manualTallyRootViwers) {
+        var streamViewers = this.sumViewers(streams);
+        game.renderedViewers = streamViewers;
+        game.viewers = manualTallyGameViewers ? streamViewers : Math.max(game.viewers, streamViewers);
+        this.root.renderedViewers += streamViewers;
+
+        if (manualTallyRootViewers) {
           this.root.viewers += streamViewers;
         }
 
@@ -120,10 +121,10 @@ service.prototype.getSnapshot = function(opts) {
         if (--totalGames <= 0) {
           deferred.resolve(this.root);
         }
-      }.bind(this));
+      }.bind(this), deferred.reject);
     }.bind(this));
 
-  }.bind(this));
+  }.bind(this), deferred.reject);
 
   return deferred.promise;
 };

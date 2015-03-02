@@ -14,40 +14,42 @@
 
   <body>
     <header class="header">
-      <div class="container">
+      <div class="header-inner container">
         <h1><a class="logo" href="/">twitch digits</a></h1>
         <p>a breakdown of live twitch.tv viewers</p>
       </div>
     </header>
-    <main class="main-wrapper" data-ng-controller="MainController" data-ng-class="{ready: chart.ready}">
+    <main class="main-wrapper" data-ng-controller="MainController" data-ng-class="{'chart-ready': chart.ready, 'chart-error': chart.error}">
       <a class="controls-trigger"
         data-ng-bind="(!showControls ? 'open' : 'close') + ' controls'"
         data-ng-click="showControls = !showControls"></a>
       <div data-ng-class="{open:showControls}" class="control-panel">
-        <div class="field">
-          <label for="game-offset">Games to skip</label>
-          <input id="game-offset" type="number" min="0" step="1" data-ng-model="chart.gameOffset">
-        </div>
-        <div class="field">
-          <label for="game-limit">Max games (0 for all)</label>
-          <input id="game-limit" type="number" min="0" step="1" data-ng-model="chart.gameLimit">
-        </div>
-        <div class="field">
-          <label for="stream-limit">Max streams per game (0 for all)</label>
-          <input id="stream-limit" type="number" min="0" step="1" data-ng-model="chart.streamLimit">
-        </div>
-        <div class="field">
-          <label for="efficiency">Hide all chart nodes below</label>
-          <div class="percent">
-            <input id="efficiency" type="number" min="0" max="100" step="0.001" data-ng-model="chart.efficiency">
+        <form data-ng-submit="chart.refresh = true;">
+          <div class="field">
+            <label for="game-offset">Games to skip</label>
+            <input id="game-offset" type="number" min="0" step="1" data-ng-model="chart.gameOffset">
           </div>
-        </div>
-        <div class="field button-wrapper">
-          <button class="refresh" data-ng-click="chart.refresh = true">Refresh data</button>
-        </div>
-        <p class="largereq-warning error" data-ng-show="calcRequests() > 150">
-          <strong>Warning:</strong> refreshing with these settings could result in very long load times. Please consider reducing the number of games and/or streams.
-        </p>
+          <div class="field">
+            <label for="game-limit">Max games (0 for all)</label>
+            <input id="game-limit" type="number" min="0" step="1" data-ng-model="chart.gameLimit">
+          </div>
+          <div class="field">
+            <label for="stream-limit">Max streams per game (0 for all)</label>
+            <input id="stream-limit" type="number" min="0" step="1" data-ng-model="chart.streamLimit">
+          </div>
+          <div class="field">
+            <label for="efficiency">Hide all chart nodes below</label>
+            <div class="percent">
+              <input id="efficiency" type="number" min="0" max="100" step="0.001" data-ng-model="chart.efficiency">
+            </div>
+          </div>
+          <div class="field button-wrapper">
+            <button class="refresh" type="submit">Refresh data</button>
+          </div>
+          <p class="largereq-warning error" data-ng-show="calcRequests() > 110">
+            <strong>Warning:</strong> refreshing with these settings could result in very long load times. Please consider reducing the number of games and/or streams.
+          </p>
+        </form>
       </div>
       <div class="games"
         data-games
@@ -56,10 +58,14 @@
         data-stream-limit="chart.streamLimit"
         data-efficiency="chart.efficiency"
         data-refresh="chart.refresh"
+        data-error="chart.error"
         data-ready="chart.ready">
       </div>
       <div class="loader-walk">
         <div></div><div></div><div></div><div></div><div></div>
+      </div>
+      <div class="chart-errors error container">
+        <p class="api-error" data-ng-bind="chart.error"></p
       </div>
     </main>
     <span class="author">

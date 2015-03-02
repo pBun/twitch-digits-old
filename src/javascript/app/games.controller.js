@@ -13,6 +13,8 @@ appController.$inject = ['$scope', 'Games'];
 appController.prototype.init = function(el) {
 
   // Set scope variables
+  var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+  this.scope.isMobile = mobileRegex.test(navigator.userAgent);
   this.scope.gameData = {};
   this.scope.chart = this.chart = {};
 
@@ -29,6 +31,7 @@ appController.prototype.init = function(el) {
 };
 
 appController.prototype.refreshChartData = function() {
+  this.scope.error = '';
   this.scope.ready = false;
   this._games.getSnapshot({
     'gameOffset': this.scope.gameOffset,
@@ -38,9 +41,8 @@ appController.prototype.refreshChartData = function() {
     this.scope.gameData = gameData;
     this.buildChart(gameData);
     this.scope.ready = true;
-  }.bind(this),
-  function(error) {
-    console.log('ERROR: ' + error);
+  }.bind(this), function(error) {
+    this.scope.error = error;
     this.scope.ready = true;
   }.bind(this));
 };
@@ -82,7 +84,7 @@ appController.prototype.initChart = function(el) {
 
   chart.partition = (chart.partition || d3.layout.partition())
       // .size([2 * Math.PI, 100])
-      .value(function(d) { return d.viewers; });
+      .value(function(d) { return d.renderedViewers || d.viewers; });
 
   chart.arc = (chart.arc || d3.svg.arc())
     .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, chart.x(d.x))); })
@@ -114,13 +116,13 @@ appController.prototype.buildChart = function(chartData) {
           if (d.type === 'root') return true;
 
           // hide anything below 0.01% by default
-          var efficiency = (scope.efficiency || 0.01) / 100;
+          var efficiency = (typeof scope.efficiency === 'number' ? scope.efficiency : 0.01) / 100;
 
           if (d.type === 'stream') {
-            return d.viewers / d.parent.viewers > efficiency && d.parent.viewers / chart.totalViewers > efficiency;
+            return d.viewers / d.parent.viewers > efficiency && d.parent.viewers / chartData.viewers > efficiency;
           }
 
-          return d.viewers / chart.totalViewers > efficiency;
+          return d.viewers / chartData.viewers > efficiency;
       });
 
   var uniqueNames = (function(a) {
@@ -161,15 +163,17 @@ appController.prototype.buildChart = function(chartData) {
   // Add the mouseleave handler to the bounding circle.
   chart.vis.on('mouseleave', this.mouseleaveHandler.bind(this));
 
-  // chart.viewers = chart.path.node().__data__.value;
-
 };
 
-// Fade all but the current sequence
-appController.prototype.mouseoverHandler = function(d) {
-
+appController.prototype.setCurrentNode = function(d) {
   var chart = this.chart;
   var scope = this.scope;
+
+  // remove node instead of attempting to set to undefined
+  if (!d) {
+    this.removeCurrentNode();
+    return;
+  }
 
   // Update current chart data
   scope.chart.current = d;
@@ -182,18 +186,16 @@ appController.prototype.mouseoverHandler = function(d) {
     .classed('active', true)
     .selectAll('path')
       .classed('current', false)
-      .filter(function(d) {
-        var isDirectlyActive = sequenceArray.indexOf(d) >= 0;
-        var isChildOfActive = sequenceArray.indexOf(d.parent) >= 0;
+      .filter(function(node) {
+        var isDirectlyActive = sequenceArray.indexOf(node) >= 0;
+        var isChildOfActive = sequenceArray.indexOf(node.parent) >= 0;
         var isActive = d.type === 'stream' ? isDirectlyActive : (isDirectlyActive || isChildOfActive);
         return isActive;
       })
       .classed('current', true);
-}
+};
 
-// Restore everything to full opacity when moving off the visualization.
-appController.prototype.mouseleaveHandler = function(d) {
-
+appController.prototype.removeCurrentNode = function() {
   var chart = this.chart;
   var scope = this.scope;
 
@@ -214,6 +216,16 @@ appController.prototype.mouseleaveHandler = function(d) {
     .classed('active', false)
     .selectAll('path')
       .classed('current', false);
+};
+
+// Fade all but the current sequence
+appController.prototype.mouseoverHandler = function(d) {
+  this.setCurrentNode(d);
+}
+
+// Restore everything to full opacity when moving off the visualization.
+appController.prototype.mouseleaveHandler = function(d) {
+  this.removeCurrentNode();
 }
 
 appController.prototype.clickHandler = function(d) {
@@ -221,12 +233,17 @@ appController.prototype.clickHandler = function(d) {
   var chart = this.chart;
   var scope = this.scope;
 
-  var mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-  var isMobile = mobileRegex.test(navigator.userAgent);
-  if (d.type === 'stream') {
-    if (isMobile) {
+  if (scope.isMobile) {
+
+    // double tap for desktop action
+    if ((d.type === 'stream' || d.type === 'game') && d !== chart.activeMobile) {
+      chart.activeMobile = d;
       return;
     }
+
+  }
+
+  if (d.type === 'stream') {
     window.open(d.url);
     return;
   }

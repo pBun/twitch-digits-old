@@ -43,6 +43,10 @@ a {
   display: block;
 }
 
+.error {
+  color: #ff0033;
+}
+
 /* # Loader
 ================================================== */
 
@@ -53,12 +57,23 @@ a {
 .loader-walk {
   display: block;
 }
-.ready {
+.chart-errors {
+  display: none;
+}
+.chart-ready {
   .chart-wrapper {
     opacity: 1;
   }
   .loader-walk {
     display: none;
+  }
+}
+.chart-error {
+  .chart-wrapper {
+    display: none;
+  }
+  .chart-errors {
+    display: block;
   }
 }
 
@@ -88,6 +103,11 @@ $mobileMainHeight = 60;
 
 .header {
   height: ($headerHeight)%;
+  .header-inner {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 .main-wrapper {
@@ -104,7 +124,6 @@ $mobileMainHeight = 60;
 @media screen and (max-width: 600px) {
   .header {
     height: ($mobileHeaderHeight)%;
-    padding-top: 50px;
     box-sizing: border-box;
   }
   .main-wrapper {
@@ -114,6 +133,7 @@ $mobileMainHeight = 60;
 
 /* # Control panel
 ================================================== */
+
 .controls-trigger,
 .control-panel {
   position: absolute;
@@ -299,4 +319,29 @@ $mobileMainHeight = 60;
 
 .chart.zoomed path.game {
   opacity: 0;
+}
+
+/* # Chart errors
+================================================== */
+
+.chart-errors {
+  position: relative;
+  top: 33%;
+  transform: translateY(-50%);
+}
+
+.chart-errors .api-error {
+  font-size: 1.6em;
+  line-height: 1.2em;
+  &:before {
+    content: 'TWITCH.TV API ERROR =(';
+    font-weight: 600;
+    display: block;
+  }
+  &:after {
+    content: 'Try refreshing.';
+    font-size: 0.8em;
+    margin-top: 1em;
+    display: block;
+  }
 }
