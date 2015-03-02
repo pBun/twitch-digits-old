@@ -1,63 +1,8 @@
 var angular = require('angular');
 
-// Node object def
-var Node = function(opts) {
-  opts = opts || {};
-  this.name = opts.name || '';
-  this.viewers = opts.viewers || 0;
-};
-Node.TYPES = {
-  ROOT: 'root',
-  STREAM: 'stream',
-  GAME: 'game'
-};
-Node.prototype.getEncodedName = function() {
-  return encodeURIComponent(this.name);
-};
-
-// Game node object def
-function RootNode(opts){
-  Node.call(this, opts);
-
-  this.type = Node.TYPES.ROOT;
-  this.children = [];
-}
-RootNode.prototype = Object.create(Node.prototype);
-RootNode.prototype.constructor = RootNode;
-
-// Game node object def
-function GameNode(rawTwitchData){
-  Node.call(this);
-
-  this.type = Node.TYPES.GAME;
-  this.name = rawTwitchData.game.name;
-  this.viewers = rawTwitchData.viewers;
-  this.image = rawTwitchData.game.box && rawTwitchData.game.box.large ?
-                rawTwitchData.game.box.large : GameNode.DEFAULT_IMAGE;
-  this.children = [];
-  this.url = GameNode.GAME_URL_PREF + this.getEncodedName();
-
-}
-GameNode.prototype = Object.create(Node.prototype);
-GameNode.prototype.constructor = GameNode;
-GameNode.URL_PREF = 'http://twitch.tv/directory/game/';
-GameNode.DEFAULT_IMAGE = '/assets/images/404_boxart-272x380.jpg';
-
-// Stream node object def
-function StreamNode(rawTwitchData){
-  Node.call(this);
-
-  this.type = Node.TYPES.STREAM;
-  this.name = rawTwitchData.channel.name;
-  this.viewers = rawTwitchData.viewers;
-  this.image = rawTwitchData.channel.logo || StreamNode.DEFAULT_IMAGE;
-  this.url = rawTwitchData.channel.url;
-}
-StreamNode.prototype = Object.create(Node.prototype);
-StreamNode.prototype.constructor = StreamNode;
-StreamNode.DEFAULT_IMAGE = '/assets/images/404_user_300x300.png';
-
-
+var RootNode = require('./../components/chartNode/rootNode.chartNode');
+var GameNode = require('./../components/chartNode/gameNode.chartNode');
+var StreamNode = require('./../components/chartNode/streamNode.chartNode');
 
 var service = function($q, Twitch) {
 
