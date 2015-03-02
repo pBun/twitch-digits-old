@@ -28,7 +28,7 @@ service.prototype.getGames = function(offsetEnd, offsetStart) {
   var deferred = this._q.defer();
   offsetStart = offsetStart || 0;
   var gameLimit = offsetEnd ? Math.min(offsetEnd - offsetStart, 100) : 100;
-  this._twitch.get('games/top?limit=' + gameLimit + '&offset=' + offsetStart).then(function(data) {
+  this._twitch.get('games/top', {'limit': gameLimit, 'offset': offsetStart}).then(function(data) {
     var games = [];
     angular.forEach(data.top, function(game) {
       var gameNode = new GameNode(game);
@@ -55,7 +55,7 @@ service.prototype.getGameStreams = function(encodedGameName, offsetEnd, offsetSt
   var deferred = this._q.defer();
   offsetStart = offsetStart || 0;
   var streamLimit = offsetEnd ? Math.min(offsetEnd - offsetStart, 100) : 100;
-  this._twitch.get('streams?limit=' + streamLimit + '&offset=' + offsetStart + '&game=' + encodedGameName).then(function(data) {
+  this._twitch.get('streams', {'limit': streamLimit, 'offset': offsetStart, 'game': encodedGameName}).then(function(data) {
     var streams = [];
     angular.forEach(data.streams, function(stream) {
       var streamNode = new StreamNode(stream);
