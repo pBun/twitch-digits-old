@@ -1,5 +1,3 @@
-var angular = require('angular');
-
 var colorbrewer = require('../vendor/colorbrewer');
 
 var appController = function($scope, Games) {

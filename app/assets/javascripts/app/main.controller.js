@@ -1,5 +1,3 @@
-var angular = require('angular');
-
 var appController = function($scope) {
 
   this.scope = $scope;
