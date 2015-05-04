@@ -1,85 +1,19 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>twitch digits</title>
-    <meta name="description" content="A visual breakdown of all live twitch.tv stream viewers sorted by game.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{#
+  Swig Templating!
+  Docs: http://paularmstrong.github.io/swig/docs/
+#}
 
-    <!--<script src="head.js"></script>-->
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100,700,900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="app.css" />
-  </head>
+{% extends 'layouts/application.html' %}
 
-  <body>
-    <header class="header">
-      <div class="header-inner container">
-        <h1><a class="logo" href="/">twitch digits</a></h1>
-        <p>a breakdown of live twitch.tv viewers</p>
-      </div>
-    </header>
-    <main class="main-wrapper" data-ng-controller="MainController" data-ng-class="{'chart-ready': chart.ready, 'chart-error': chart.error}">
-      <a class="controls-trigger"
-        data-ng-bind="(!showControls ? 'open' : 'close') + ' controls'"
-        data-ng-click="showControls = !showControls"></a>
-      <div data-ng-class="{open:showControls}" class="control-panel">
-        <form data-ng-submit="chart.refresh = true;">
-          <div class="field">
-            <label for="game-offset">Games to skip</label>
-            <input id="game-offset" type="number" min="0" step="1" data-ng-model="chart.gameOffset">
-          </div>
-          <div class="field">
-            <label for="game-limit">Max games (0 for all)</label>
-            <input id="game-limit" type="number" min="0" step="1" data-ng-model="chart.gameLimit">
-          </div>
-          <div class="field">
-            <label for="stream-limit">Max streams per game (0 for all)</label>
-            <input id="stream-limit" type="number" min="0" step="1" data-ng-model="chart.streamLimit">
-          </div>
-          <div class="field">
-            <label for="efficiency">Hide all chart nodes below</label>
-            <div class="percent">
-              <input id="efficiency" type="number" min="0" max="100" step="0.001" data-ng-model="chart.efficiency">
-            </div>
-          </div>
-          <div class="field button-wrapper">
-            <button class="refresh" type="submit">Refresh data</button>
-          </div>
-          <p class="largereq-warning error" data-ng-show="calcRequests() > 110">
-            <strong>Warning:</strong> refreshing with these settings could result in very long load times. Please consider reducing the number of games and/or streams.
-          </p>
-        </form>
-      </div>
-      <div class="games"
-        data-games
-        data-game-limit="chart.gameLimit"
-        data-game-offset="chart.gameOffset"
-        data-stream-limit="chart.streamLimit"
-        data-efficiency="chart.efficiency"
-        data-refresh="chart.refresh"
-        data-error="chart.error"
-        data-ready="chart.ready">
-      </div>
-      <div class="loader-walk">
-        <div></div><div></div><div></div><div></div><div></div>
-      </div>
-      <div class="chart-errors error container">
-        <p class="api-error" data-ng-bind="chart.error"></p
-      </div>
-    </main>
-    <span class="author">
-      <a href="http://dustinboersma.com">dustin boersma</a> / <a href="http://twitch.tv/pBun">pBun</a>
-    </span>
-    <a class="fork-me" href="https://github.com/pBun/twitch-digits"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
-    <script src="app.js"></script>
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-60201735-1', 'auto');
-      ga('send', 'pageview');
-    </script>
-  </body>
-</html>
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+{% include "shared/twitch-chart/chart.html" %}
+{% endblock %}
+
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js"></script>
+<script src="assets/javascripts/app.js"></script>
+{% endblock %}
