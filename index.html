@@ -7,7 +7,7 @@
   <meta name="description" content="A visual breakdown of all live twitch.tv stream viewer statistics sorted by game.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="http://fonts.googleapis.com/css?family=Roboto:400,300,100,700,900" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="assets/stylesheets/app-8fc9a740.css">
+  <link rel="stylesheet" href="assets/stylesheets/app-2a25a31d.css">
   
 
 
@@ -77,8 +77,9 @@
   <div></div><div></div><div></div><div></div><div></div>
 </div>
 
-  <div class="chart-errors error container">
-    <p class="api-error" data-ng-bind="chart.error"></p
+  <div class="chart-errors container">
+    <p class="error api-error" data-ng-show="chart.error.type==='api'" data-ng-bind="chart.error.msg"></p>
+    <p class="error other-error" data-ng-show="chart.error.type==='other'" data-ng-bind="chart.error.msg"></p>
   </div>
 </main>
 
@@ -89,10 +90,10 @@
 <a class="fork-me" href="https://github.com/pBun/twitch-digits"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
-  <script src="assets/javascripts/shared-50eaa833e58ae4bcf168.js"></script>
+  <script src="assets/javascripts/shared-164b9b017292dfdccc9f.js"></script>
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.js"></script>
-<script src="assets/javascripts/app-50eaa833e58ae4bcf168.js"></script>
+<script src="assets/javascripts/app-164b9b017292dfdccc9f.js"></script>
 
   <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
