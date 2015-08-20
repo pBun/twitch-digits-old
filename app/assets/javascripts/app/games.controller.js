@@ -34,7 +34,8 @@ appController.prototype.refreshChartData = function() {
   this._games.getSnapshot({
     'gameOffset': this.scope.gameOffset,
     'gameLimit': this.scope.gameLimit,
-    'streamLimit': this.scope.streamLimit
+    'streamLimit': this.scope.streamLimit,
+    'gameName': this.scope.gameName
   }).then(function(gameData) {
     this.scope.gameData = gameData;
     this.buildChart(gameData);

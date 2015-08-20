@@ -4,6 +4,10 @@
 <div data-ng-class="{open:showControls}" class="control-panel">
   <form data-ng-submit="chart.refresh = true;">
     <div class="field">
+      <label for="game-name">Game name</label>
+      <input id="game-name" type="text" data-ng-model="chart.gameName">
+    </div>
+    <div class="field">
       <label for="game-offset">Games to skip</label>
       <input id="game-offset" type="number" min="0" step="1" data-ng-model="chart.gameOffset">
     </div>

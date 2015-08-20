@@ -24,13 +24,16 @@ service.prototype.sumViewers = function (items) {
   }, 0);
 };
 
-service.prototype.getGames = function(offsetEnd, offsetStart) {
+service.prototype.getGames = function(offsetEnd, offsetStart, gameName) {
   var deferred = this._q.defer();
   offsetStart = offsetStart || 0;
+  offsetEnd = gameName ? 0 : offsetEnd;
   var gameLimit = offsetEnd ? Math.min(offsetEnd - offsetStart, 100) : 100;
   this._twitch.get('games/top', {'limit': gameLimit, 'offset': offsetStart}).then(function(data) {
     var games = [];
     angular.forEach(data.top, function(game) {
+      if (game.game.name.indexOf(gameName || '') === -1) return;
+
       var gameNode = new GameNode(game);
       if (!gameNode.name) return;
       games.push(gameNode);
@@ -38,7 +41,7 @@ service.prototype.getGames = function(offsetEnd, offsetStart) {
 
     var nextOffsetStart = offsetStart + gameLimit;
     if (data._total > nextOffsetStart && (!offsetEnd || nextOffsetStart < offsetEnd)) {
-      this.getGames(offsetEnd, nextOffsetStart).then(function(nextReqGames) {
+      this.getGames(offsetEnd, nextOffsetStart, gameName).then(function(nextReqGames) {
         games = games.concat(nextReqGames);
         deferred.resolve(games);
       });
@@ -82,10 +85,11 @@ service.prototype.getSnapshot = function(opts) {
   var gameLimit = opts.gameLimit;
   var streamOffset = 0;
   var streamLimit = opts.streamLimit;
+  var gameName = opts.gameName;
 
   // if no limits, only use our stream totals for precise stats
   var manualTallyGameViewers = !streamLimit;
-  var manualTallyRootViewers = manualTallyGameViewers && !gameLimit;
+  var manualTallyRootViewers = manualTallyGameViewers && !gameLimit && !gameName;
 
   var deferred = this._q.defer();
 
@@ -93,7 +97,7 @@ service.prototype.getSnapshot = function(opts) {
   this.root.renderedViewers = 0;
 
   // get games
-  this.getGames(gameOffset + gameLimit, gameOffset).then(function(games) {
+  this.getGames(gameOffset + gameLimit, gameOffset, gameName).then(function(games) {
     this.root.children = games;
     var totalGames = games.length;
 

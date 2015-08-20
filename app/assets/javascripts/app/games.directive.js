@@ -11,6 +11,7 @@ var appDirective = function($window) {
         gameLimit: '=?',
         gameOffset: '=?',
         streamLimit: '=?',
+        gameName: '=?',
         efficiency: '=?',
         error: '=?'
     },
