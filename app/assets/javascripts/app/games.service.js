@@ -26,13 +26,14 @@ service.prototype.sumViewers = function (items) {
 
 service.prototype.getGames = function(offsetEnd, offsetStart, gameName) {
   var deferred = this._q.defer();
+  gameName = gameName || '';
   offsetStart = offsetStart || 0;
   offsetEnd = gameName ? 0 : offsetEnd;
   var gameLimit = offsetEnd ? Math.min(offsetEnd - offsetStart, 100) : 100;
   this._twitch.get('games/top', {'limit': gameLimit, 'offset': offsetStart}).then(function(data) {
     var games = [];
     angular.forEach(data.top, function(game) {
-      if (game.game.name.indexOf(gameName || '') === -1) return;
+      if (game.game.name.toLowerCase().indexOf(gameName.toLowerCase().trim()) === -1) return;
 
       var gameNode = new GameNode(game);
       if (!gameNode.name) return;
@@ -106,6 +107,14 @@ service.prototype.getSnapshot = function(opts) {
       this._twitch.get('streams/summary').then(function(data) {
         this.root.viewers = data.viewers;
       }.bind(this), deferred.reject);
+    }
+
+    if (!games || !games.length) {
+      var err = {
+        msg: 'No games found.',
+        type: 'other'
+      }
+      deferred.reject(err);
     }
 
     // format each game and get live streams

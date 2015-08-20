@@ -334,18 +334,32 @@ $mobileMainHeight = 60;
   transform: translateY(-50%);
 }
 
-.chart-errors .api-error {
+.chart-errors .error {
   font-size: 1.6em;
   line-height: 1.2em;
   &:before {
-    content: 'TWITCH.TV API ERROR =(';
     font-weight: 600;
     display: block;
+    margin-bottom: 0.25em;
   }
   &:after {
-    content: 'Try refreshing.';
     font-size: 0.8em;
     margin-top: 1em;
     display: block;
+  }
+}
+
+.chart-errors .other-error {
+  &:before {
+    content: 'UH OH =(';
+  }
+}
+
+.chart-errors .api-error {
+  &:before {
+    content: 'TWITCH.TV API ERROR =(';
+  }
+  &:after {
+    content: 'Try refreshing.';
   }
 }

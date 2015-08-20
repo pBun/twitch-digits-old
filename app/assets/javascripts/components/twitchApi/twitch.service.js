@@ -57,18 +57,20 @@ service.prototype.get = function(request, options) {
   this._http.jsonp(url)
     .success(function(data) {
       if (data.error) {
-        var errorMsg = '';
+        var err = {};
+        err.type = 'api';
+        err.msg = '';
         if (data.status) {
-          errorMsg += data.status + ' ';
+          err.msg += data.status + ' ';
         }
         if (data.error) {
-          errorMsg += data.error + ': ';
+          err.msg += data.error + ': ';
         }
         if (data.message) {
-          errorMsg += data.message + ' ';
+          err.msg += data.message + ' ';
         }
-        errorMsg += '(' + url + ')';
-        deferred.reject(errorMsg);
+        err.msg += '(' + url + ')';
+        deferred.reject(err);
       }
       deferred.resolve(data);
     })

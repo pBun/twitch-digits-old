@@ -14,7 +14,8 @@
     data-ready="chart.ready">
   </div>
   {% include "../loader.html" %}
-  <div class="chart-errors error container">
-    <p class="api-error" data-ng-bind="chart.error"></p
+  <div class="chart-errors container">
+    <p class="error api-error" data-ng-show="chart.error.type==='api'" data-ng-bind="chart.error.msg"></p>
+    <p class="error other-error" data-ng-show="chart.error.type==='other'" data-ng-bind="chart.error.msg"></p>
   </div>
 </main>
