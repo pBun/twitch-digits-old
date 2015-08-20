@@ -175,8 +175,12 @@ $mobileMainHeight = 60;
   margin-bottom: 1.5rem;
 }
 .control-panel .field input {
-  width: 75px;
+  width: 100%;
+  max-width: 75px;
   margin: 0;
+}
+.control-panel .field input[type="text"] {
+  max-width: none;
 }
 .control-panel .button-wrapper {
   text-align: center;
