@@ -40,12 +40,6 @@ service.prototype.get = function(request, options) {
   };
   options = angular.extend({}, (options || {}), defaultOptions);
 
-  // work-around for twitch.tv api streams req not supporting client_id
-  // https://github.com/justintv/Twitch-API/issues/334
-  if (request === 'streams') {
-    options['client_id'] = null;
-  }
-
   var queryString = this.buildQueryString(options);
 
   // build final url
