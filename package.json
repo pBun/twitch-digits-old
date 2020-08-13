@@ -39,7 +39,7 @@
     "gulp-util": "^3.0.0",
     "gulp-watch": "^4.1.1",
     "html-loader": "^0.3.0",
-    "lodash": "^3.5.0",
+    "lodash": "^4.17.20",
     "merge-stream": "^0.1.7",
     "object-assign": "^2.0.0",
     "pretty-hrtime": "~0.2.1",
